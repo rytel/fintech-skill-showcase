@@ -17,10 +17,7 @@ RUN go mod download
 COPY . .
 
 # Kompilacja aplikacji.
-# - '-o server' określa nazwę pliku wynikowego (binarki).
-# - '-ldflags -s -w' zmniejsza rozmiar binarki i usuwa zbędne informacje debugowania.
-# - './cmd/server' (zakładając, że to katalog z głównym pakietem) lub po prostu '.' jeśli to tylko main.go.
-RUN go build -o server .
+RUN go build -o server ./cmd/server
 
 
 # ETAP 2: Uruchamianie (runner)

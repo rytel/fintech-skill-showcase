@@ -63,8 +63,42 @@ Lista zadań jest podzielona na fazy, co pozwala na stopniową implementację lo
 
 - [ ] **5.1** Utworzenie interfejsu SwiftUI do wyświetlania salda i wykonania transakcji.
 - [ ] **5.2** Implementacja logiki sieciowej (Swift `URLSession` / `Decodable`) do pobierania salda z API Go.
-- [ ] **5.3** Dodanie tokena autoryzacji (np. JWT) do nagłówka każdego żądania HTTP w Swift.
+- [x] **5.3** (Backend Ready) Dodanie tokena autoryzacji (np. JWT) do nagłówka każdego żądania HTTP w Swift. (Server: `/api/login` & Middleware)
 - [ ] **5.4** Zaimplementowanie **Keychain Services** w iOS do bezpiecznego przechowywania tokena autoryzacyjnego.
 - [ ] **5.5** (Opcjonalnie) Badanie integracji z **SwiftData** w celu lokalnego buforowania historii transakcji.
 
+### 🧪 Środowisko Testowe (Backend)
+
+- [x] **5.6** Endpoint `/api/test/reset` do resetowania stanu bazy danych.
+
+- [x] **5.7** Endpoint `/api/account/{user_id}/transactions` do pobierania historii.
+
+
+
 ---
+
+
+
+## Faza 6: Refaktoryzacja i Jakość Kodu (Senior Level)
+
+
+
+### 🏗 Architektura
+
+- [x] **6.1** Wprowadzenie **Standard Go Project Layout** (`cmd/`, `internal/`).
+
+- [x] **6.2** Hermetyzacja logiki biznesowej w pakiecie `internal/`.
+
+- [x] **6.3** Implementacja **Dependency Injection** dla handlerów i repozytoriów.
+
+
+
+### 🛡 Testowanie i Stabilność
+
+- [x] **6.4** Wprowadzenie **Testów Jednostkowych** z użyciem `sqlmock` dla warstwy danych.
+
+- [x] **6.5** Implementacja testów dla warstwy HTTP (`httptest`).
+
+- [x] **6.6** Zapewnienie pełnego pokrycia dla "ścieżek krytycznych" (brak środków, błędy walidacji).
+
+- [x] **6.7** Optymalizacja `Dockerfile` (multi-stage build z poprawnymi ścieżkami).

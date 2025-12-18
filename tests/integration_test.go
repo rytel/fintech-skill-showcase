@@ -9,7 +9,7 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
-	"go-web-server/models"
+	"go-web-server/internal/model"
 )
 
 const (
@@ -60,9 +60,9 @@ func TestTransactionFlow(t *testing.T) {
 	client := &http.Client{Timeout: 5 * time.Second}
 
 	// 2. Test Deposit
-	depositReq := models.TransactionRequest{
+	depositReq := model.TransactionRequest{
 		UserID: testUserID,
-		Type:   models.Deposit,
+		Type:   model.Deposit,
 		Amount: 100.0,
 	}
 	payload, _ := json.Marshal(depositReq)
@@ -77,7 +77,7 @@ func TestTransactionFlow(t *testing.T) {
 		t.Errorf("Expected status 200 for deposit, got %d", resp.StatusCode)
 	}
 
-	var account models.Account
+	var account model.Account
 	if err := json.NewDecoder(resp.Body).Decode(&account); err != nil {
 		t.Fatalf("Failed to decode response: %v", err)
 	}
@@ -87,9 +87,9 @@ func TestTransactionFlow(t *testing.T) {
 	}
 
 	// 3. Test Withdraw
-	withdrawReq := models.TransactionRequest{
+	withdrawReq := model.TransactionRequest{
 		UserID: testUserID,
-		Type:   models.Withdraw,
+		Type:   model.Withdraw,
 		Amount: 40.0,
 	}
 	payload, _ = json.Marshal(withdrawReq)
@@ -113,9 +113,9 @@ func TestTransactionFlow(t *testing.T) {
 	}
 
 	// 4. Test Overdraft (Withdraw more than balance)
-	overdraftReq := models.TransactionRequest{
+	overdraftReq := model.TransactionRequest{
 		UserID: testUserID,
-		Type:   models.Withdraw,
+		Type:   model.Withdraw,
 		Amount: 100.0,
 	}
 	payload, _ = json.Marshal(overdraftReq)
