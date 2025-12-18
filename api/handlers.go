@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"go-web-server/database"
+	"go-web-server/models"
 )
 
 // StatusResponse definiuje strukturę danych, która będzie serializowana do JSON.
@@ -51,6 +52,57 @@ func MakeAccountHandler(db *sql.DB) http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(account); err != nil {
 			log.Printf("Błąd kodowania JSON: %v", err)
+		}
+	}
+}
+
+// MakeTransactionHandler obsługuje tworzenie nowych transakcji (wpłaty/wypłaty).
+func MakeTransactionHandler(db *sql.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Dozwolona tylko metoda POST", http.StatusMethodNotAllowed)
+			return
+		}
+
+		var req models.TransactionRequest
+		// Dekodowanie JSON z body
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Nieprawidłowy format JSON", http.StatusBadRequest)
+			return
+		}
+
+		// Prosta walidacja
+		if req.Amount <= 0 {
+			http.Error(w, "Kwota musi być większa od zera", http.StatusBadRequest)
+			return
+		}
+		if req.UserID == "" {
+			http.Error(w, "Brak User ID", http.StatusBadRequest)
+			return
+		}
+		if req.Type != models.Deposit && req.Type != models.Withdraw {
+			http.Error(w, "Nieprawidłowy typ transakcji (oczekiwano: DEPOSIT lub WITHDRAW)", http.StatusBadRequest)
+			return
+		}
+
+		// Wykonanie transakcji w bazie
+		updatedAccount, err := database.CreateTransaction(db, req)
+		if err != nil {
+			log.Printf("Błąd przetwarzania transakcji: %v", err)
+			// Rozróżnienie błędów biznesowych od systemowych
+			if err.Error() == "niewystarczające środki na koncie" || err.Error() == "użytkownik nie posiada konta" {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+			} else {
+				http.Error(w, "Błąd serwera podczas przetwarzania transakcji", http.StatusInternalServerError)
+			}
+			return
+		}
+
+		// Sukces - zwróć zaktualizowane konto
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK) // Lub 201 Created
+		if err := json.NewEncoder(w).Encode(updatedAccount); err != nil {
+			log.Printf("Błąd kodowania odpowiedzi JSON: %v", err)
 		}
 	}
 }

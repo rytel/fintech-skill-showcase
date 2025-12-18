@@ -27,6 +27,8 @@ func main() {
 	http.HandleFunc("/api/status", api.JsonHandler) // NOWY: Endpoint JSON
 	// Przekazujemy 'db' do handlera za pomocą domknięcia (closure)
 	http.HandleFunc("/api/account/", api.MakeAccountHandler(db))
+	// Rejestracja nowego endpointu transakcyjnego
+	http.HandleFunc("/api/transactions", api.MakeTransactionHandler(db))
 
 	port := os.Getenv("PORT")
 	if port == "" {

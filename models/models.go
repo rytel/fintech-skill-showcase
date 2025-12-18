@@ -26,3 +26,10 @@ type Transaction struct {
 	Amount    float64         `json:"amount"`
 	CreatedAt time.Time       `json:"created_at"`
 }
+
+// TransactionRequest reprezentuje dane wejściowe dla nowej transakcji.
+type TransactionRequest struct {
+	UserID string          `json:"user_id"`
+	Type   TransactionType `json:"type"`
+	Amount float64         `json:"amount"`
+}

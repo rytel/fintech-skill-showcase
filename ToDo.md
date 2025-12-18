@@ -24,14 +24,14 @@ Lista zadań jest podzielona na fazy, co pozwala na stopniową implementację lo
 
 ### 💰 Logika Transakcyjna (Kluczowe)
 
-- [ ] **2.1** Utworzenie endpointu **POST** `/api/transactions` do obsługi wpłat (`Deposit`) i wypłat (`Withdraw`).
-- [ ] **2.2** Obsługa JSON wejściowego (payload) i dekodowanie go do struktury Go (`TransactionRequest`).
-- [ ] **2.3** Zaimplementowanie mechanizmu **walidacji** (np. sprawdzenie wystarczającego salda dla wypłaty).
-- [ ] **2.4** Zaimplementowanie **Transakcji DB (ACID)**: użycie `db.Begin()`, `tx.Commit()`, `tx.Rollback()` w celu zagwarantowania spójności danych przy operacjach na saldzie i historii.
+- [x] **2.1** Utworzenie endpointu **POST** `/api/transactions` do obsługi wpłat (`Deposit`) i wypłat (`Withdraw`).
+- [x] **2.2** Obsługa JSON wejściowego (payload) i dekodowanie go do struktury Go (`TransactionRequest`).
+- [x] **2.3** Zaimplementowanie mechanizmu **walidacji** (np. sprawdzenie wystarczającego salda dla wypłaty).
+- [x] **2.4** Zaimplementowanie **Transakcji DB (ACID)**: użycie `db.Begin()`, `tx.Commit()`, `tx.Rollback()` w celu zagwarantowania spójności danych przy operacjach na saldzie i historii.
 
 ### 🎯 Testy Integracyjne
 
-- [ ] **2.5** Napisanie **testów integracyjnych**, które uruchamiają serwer, wysyłają żądania POST i weryfikują, czy zmiany w PostgreSQL są poprawne (weryfikacja salda i historii).
+- [x] **2.5** Napisanie **testów integracyjnych**, które uruchamiają serwer, wysyłają żądania POST i weryfikują, czy zmiany w PostgreSQL są poprawne (weryfikacja salda i historii).
 
 ---
 
@@ -42,7 +42,7 @@ Lista zadań jest podzielona na fazy, co pozwala na stopniową implementację lo
 - [x] **3.1** Utworzenie pliku **`docker-compose.yml`** definiującego serwis `api-service` (Twój Go Server) i `db-service` (PostgreSQL). 
 - [x] **3.2** Skonfigurowanie połączenia z DB w `api-service` tak, aby używało nazwy serwisu PostgreSQL (`db-service`) jako hosta.
 - [x] **3.3** Konfiguracja wolumenu (volume) dla PostgreSQL, aby dane bazy przetrwały restarty kontenera.
-- [ ] **3.4** Weryfikacja uruchomienia za pomocą `docker compose up -d` i sprawdzenie, że oba serwisy działają i komunikują się.
+- [x] **3.4** Weryfikacja uruchomienia za pomocą `docker compose up -d` i sprawdzenie, że oba serwisy działają i komunikują się.
 
 ---
 
