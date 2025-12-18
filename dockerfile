@@ -42,6 +42,9 @@ EXPOSE 8080
 # Kopiowanie skompilowanej binarki z etapu 'builder' do tego, mniejszego, obrazu.
 COPY --from=builder /app/server .
 
+# Kopiowanie folderu migracji, aby aplikacja mogła odczytać plik SQL przy starcie
+COPY --from=builder /app/migrations ./migrations
+
 # Definicja polecenia, które zostanie uruchomione po starcie kontenera.
 # Wskazujemy, aby uruchomić nasz skompilowany plik 'server'.
 # Forma 'exec' ([...]) jest preferowana.

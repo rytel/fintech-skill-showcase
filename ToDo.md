@@ -8,15 +8,15 @@ Lista zadań jest podzielona na fazy, co pozwala na stopniową implementację lo
 
 ### 💾 Integracja z PostgreSQL (Lokalnie)
 
-- [ ] **1.1** Instalacja sterownika PostgreSQL w Go (`github.com/lib/pq`).
-- [ ] **1.2** Konfiguracja połączenia z bazą danych w kodzie Go (użycie zmiennych środowiskowych dla parametrów połączenia).
-- [ ] **1.3** Utworzenie struktur Go (Modeli): `Account` (ID, UserID, Balance) i `Transaction` (ID, AccountID, Type, Amount).
-- [ ] **1.4** Zaimplementowanie narzędzia do migracji DB (np. `goose` lub `migrate`) i utworzenie tabel dla `Account` i `Transaction`.
+- [x] **1.1** Instalacja sterownika PostgreSQL w Go (`github.com/lib/pq`).
+- [x] **1.2** Konfiguracja połączenia z bazą danych w kodzie Go (użycie zmiennych środowiskowych dla parametrów połączenia).
+- [x] **1.3** Utworzenie struktur Go (Modeli): `Account` (ID, UserID, Balance) i `Transaction` (ID, AccountID, Type, Amount).
+- [x] **1.4** Zaimplementowanie narzędzia do migracji DB (np. `goose` lub `migrate`) i utworzenie tabel dla `Account` i `Transaction`.
 
 ### 🧪 Testy i Pierwsze API
 
-- [ ] **1.5** Utworzenie pierwszego pliku testowego (`*_test.go`) i napisanie prostego **testu jednostkowego** dla funkcji (np. walidacji kwoty).
-- [ ] **1.6** Implementacja endpointu **GET** `/api/account/{user_id}`, który pobiera i zwraca saldo konta danego użytkownika (użycie ścieżki URL do pobrania ID).
+- [x] **1.5** Utworzenie pierwszego pliku testowego (`*_test.go`) i napisanie prostego **testu jednostkowego** dla funkcji (np. walidacji kwoty).
+- [x] **1.6** Implementacja endpointu **GET** `/api/account/{user_id}`, który pobiera i zwraca saldo konta danego użytkownika (użycie ścieżki URL do pobrania ID).
 
 ---
 
@@ -39,9 +39,9 @@ Lista zadań jest podzielona na fazy, co pozwala na stopniową implementację lo
 
 ### 🐳 Lokalna Orkiestracja
 
-- [ ] **3.1** Utworzenie pliku **`docker-compose.yml`** definiującego serwis `api-service` (Twój Go Server) i `db-service` (PostgreSQL). 
-- [ ] **3.2** Skonfigurowanie połączenia z DB w `api-service` tak, aby używało nazwy serwisu PostgreSQL (`db-service`) jako hosta.
-- [ ] **3.3** Konfiguracja wolumenu (volume) dla PostgreSQL, aby dane bazy przetrwały restarty kontenera.
+- [x] **3.1** Utworzenie pliku **`docker-compose.yml`** definiującego serwis `api-service` (Twój Go Server) i `db-service` (PostgreSQL). 
+- [x] **3.2** Skonfigurowanie połączenia z DB w `api-service` tak, aby używało nazwy serwisu PostgreSQL (`db-service`) jako hosta.
+- [x] **3.3** Konfiguracja wolumenu (volume) dla PostgreSQL, aby dane bazy przetrwały restarty kontenera.
 - [ ] **3.4** Weryfikacja uruchomienia za pomocą `docker compose up -d` i sprawdzenie, że oba serwisy działają i komunikują się.
 
 ---
