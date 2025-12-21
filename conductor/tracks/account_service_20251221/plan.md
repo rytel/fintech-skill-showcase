@@ -1,10 +1,10 @@
 # Plan: Account Service Microservice
 
-## Phase 1: Foundation & Data Model
+## Phase 1: Foundation & Data Model [checkpoint: 6807f88]
 - [x] Task: Design the PostgreSQL schema for accounts and balances. ac81f6f
 - [x] Task: Write tests for the account repository (ACID transactions, locking). 731bdbc
 - [x] Task: Implement the account repository in Go. 7c17e13
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Data Model' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Data Model' (Protocol in workflow.md)
 
 ## Phase 2: Core Logic & Service Layer
 - [ ] Task: Write tests for account creation and retrieval logic.
