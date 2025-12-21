@@ -146,6 +146,19 @@ func TestAuthMiddleware_Failure(t *testing.T) {
 	assert.Equal(t, http.StatusUnauthorized, rr.Code)
 }
 
+func TestHealthHandler(t *testing.T) {
+	mockSvc := new(MockService)
+	r := setupRouter(mockSvc)
+
+	req, _ := http.NewRequest("GET", "/health", nil)
+	rr := httptest.NewRecorder()
+
+	r.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Contains(t, rr.Body.String(), "UP")
+}
+
 func TestCreateAccountHandler_InvalidJSON(t *testing.T) {
 	mockSvc := new(MockService)
 	r := setupRouter(mockSvc)

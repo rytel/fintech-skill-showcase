@@ -5,6 +5,7 @@ import (
 	"go-web-server/services/account-service/internal/handler/middleware"
 	"go-web-server/services/account-service/internal/model"
 	"go-web-server/services/account-service/internal/service"
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -19,12 +20,18 @@ func NewAccountHandler(service service.AccountService) *AccountHandler {
 }
 
 func (h *AccountHandler) RegisterRoutes(r chi.Router) {
+	r.Get("/health", h.HealthHandler)
+
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.AuthMiddleware)
 		r.Post("/accounts", h.CreateAccount)
 		r.Get("/accounts/{accountId}", h.GetAccount)
 		r.Post("/accounts/{accountId}/balance", h.UpdateBalance)
 	})
+}
+
+func (h *AccountHandler) HealthHandler(w http.ResponseWriter, r *http.Request) {
+	respondWithJSON(w, http.StatusOK, map[string]string{"status": "UP"})
 }
 
 func (h *AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {
@@ -34,16 +41,19 @@ func (h *AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		log.Printf("Error decoding create account body: %v", err)
 		respondWithError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
 
 	acc, err := h.service.CreateAccount(r.Context(), body.CustomerID, body.Currency)
 	if err != nil {
+		log.Printf("Error creating account: %v", err)
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
+	log.Printf("Account created: %s for customer %s", acc.ID, body.CustomerID)
 	respondWithJSON(w, http.StatusCreated, acc)
 }
 
@@ -56,6 +66,7 @@ func (h *AccountHandler) GetAccount(w http.ResponseWriter, r *http.Request) {
 
 	acc, err := h.service.GetAccount(r.Context(), accountID)
 	if err != nil {
+		log.Printf("Error getting account %s: %v", accountID, err)
 		respondWithError(w, http.StatusNotFound, "Account not found")
 		return
 	}
@@ -77,16 +88,19 @@ func (h *AccountHandler) UpdateBalance(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		log.Printf("Error decoding update balance body for account %s: %v", accountID, err)
 		respondWithError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
 
 	err := h.service.UpdateBalance(r.Context(), accountID, body.Amount, body.Type, body.Description)
 	if err != nil {
+		log.Printf("Error updating balance for account %s: %v", accountID, err)
 		respondWithError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
+	log.Printf("Balance updated for account %s: %.2f (%s)", accountID, body.Amount, body.Type)
 	w.WriteHeader(http.StatusNoContent)
 }
 
