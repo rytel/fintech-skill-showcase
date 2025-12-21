@@ -69,3 +69,31 @@ func TestGetAccount(t *testing.T) {
 	assert.Equal(t, expectedAcc, acc)
 	mockRepo.AssertExpectations(t)
 }
+
+func TestCreateAccount_InvalidID(t *testing.T) {
+	mockRepo := new(MockRepository)
+	svc := NewAccountService(mockRepo)
+	ctx := context.Background()
+
+	acc, err := svc.CreateAccount(ctx, "invalid-uuid", "USD")
+
+	assert.Error(t, err)
+	assert.Nil(t, acc)
+	assert.Contains(t, err.Error(), "invalid customer id")
+}
+
+func TestGetAccount_NotFound(t *testing.T) {
+	mockRepo := new(MockRepository)
+	svc := NewAccountService(mockRepo)
+	ctx := context.Background()
+
+	accountID := uuid.New()
+	mockRepo.On("GetAccount", accountID.String()).Return(nil, nil)
+
+	acc, err := svc.GetAccount(ctx, accountID.String())
+
+	assert.Error(t, err)
+	assert.Nil(t, acc)
+	assert.Contains(t, err.Error(), "account not found")
+	mockRepo.AssertExpectations(t)
+}
