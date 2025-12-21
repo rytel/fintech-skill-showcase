@@ -10,7 +10,7 @@
 - [x] Task: Write tests for account creation and retrieval logic. 613e527
 - [x] Task: Implement service layer for account management. 3c701cf
 - [x] Task: Write tests for multi-currency balance validation. 1747eb8
-- [ ] Task: Implement balance update logic with safety checks.
+- [x] Task: Implement balance update logic with safety checks. 20c64e7
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Logic & Service Layer' (Protocol in workflow.md)
 
 ## Phase 3: API & Connectivity
