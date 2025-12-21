@@ -2,7 +2,7 @@
 
 ## Phase 1: Foundation & Data Model
 - [x] Task: Design the PostgreSQL schema for accounts and balances. ac81f6f
-- [ ] Task: Write tests for the account repository (ACID transactions, locking).
+- [x] Task: Write tests for the account repository (ACID transactions, locking). 731bdbc
 - [ ] Task: Implement the account repository in Go.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Data Model' (Protocol in workflow.md)
 
