@@ -13,12 +13,12 @@
 - [x] Task: Implement balance update logic with safety checks. 20c64e7
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Core Logic & Service Layer' (Protocol in workflow.md)
 
-## Phase 3: API & Connectivity
+## Phase 3: API & Connectivity [checkpoint: c501b64]
 - [x] Task: Define OpenAPI specification for the Account Service. fdfa87a
 - [x] Task: Write tests for REST handlers (JSON mapping, error responses). 3a11188
 - [x] Task: Implement REST API handlers using Go. e6decfb
 - [x] Task: Integrate JWT authentication for protected endpoints. e6d4c82
-- [~] Task: Conductor - User Manual Verification 'Phase 3: API & Connectivity' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: API & Connectivity' (Protocol in workflow.md)
 
 ## Phase 4: Integration & Cleanup
 - [ ] Task: Write integration tests for the full account lifecycle.
