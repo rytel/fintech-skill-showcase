@@ -14,7 +14,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Core Logic & Service Layer' (Protocol in workflow.md)
 
 ## Phase 3: API & Connectivity
-- [ ] Task: Define OpenAPI specification for the Account Service.
+- [x] Task: Define OpenAPI specification for the Account Service. fdfa87a
 - [ ] Task: Write tests for REST handlers (JSON mapping, error responses).
 - [ ] Task: Implement REST API handlers using Go.
 - [ ] Task: Integrate JWT authentication for protected endpoints.
