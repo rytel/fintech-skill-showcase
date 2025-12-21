@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"go-web-server/services/account-service/internal/handler/middleware"
 	"go-web-server/services/account-service/internal/model"
 	"go-web-server/services/account-service/internal/service"
 	"net/http"
@@ -18,9 +19,12 @@ func NewAccountHandler(service service.AccountService) *AccountHandler {
 }
 
 func (h *AccountHandler) RegisterRoutes(r chi.Router) {
-	r.Post("/accounts", h.CreateAccount)
-	r.Get("/accounts/{accountId}", h.GetAccount)
-	r.Post("/accounts/{accountId}/balance", h.UpdateBalance)
+	r.Group(func(r chi.Router) {
+		r.Use(middleware.AuthMiddleware)
+		r.Post("/accounts", h.CreateAccount)
+		r.Get("/accounts/{accountId}", h.GetAccount)
+		r.Post("/accounts/{accountId}/balance", h.UpdateBalance)
+	})
 }
 
 func (h *AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {

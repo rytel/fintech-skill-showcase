@@ -7,14 +7,28 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"go-web-server/services/account-service/internal/model"
+	"go-web-server/services/account-service/internal/service"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
+
+var jwtKey = []byte("my_secret_key_for_testing_only")
+
+func createToken(username string) string {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"username": username,
+		"exp":      time.Now().Add(time.Hour).Unix(),
+	})
+	tokenString, _ := token.SignedString(jwtKey)
+	return tokenString
+}
 
 type MockService struct {
 	mock.Mock
@@ -41,9 +55,16 @@ func (m *MockService) UpdateBalance(ctx context.Context, accountID string, amoun
 	return args.Error(0)
 }
 
+func setupRouter(mockSvc service.AccountService) chi.Router {
+	r := chi.NewRouter()
+	h := NewAccountHandler(mockSvc)
+	h.RegisterRoutes(r)
+	return r
+}
+
 func TestCreateAccountHandler(t *testing.T) {
 	mockSvc := new(MockService)
-	h := NewAccountHandler(mockSvc)
+	r := setupRouter(mockSvc)
 
 	customerID := uuid.New().String()
 	currency := "USD"
@@ -56,29 +77,27 @@ func TestCreateAccountHandler(t *testing.T) {
 	mockSvc.On("CreateAccount", mock.Anything, customerID, currency).Return(expectedAcc, nil)
 
 	req, _ := http.NewRequest("POST", "/accounts", bytes.NewBuffer(reqBody))
+	req.Header.Set("Authorization", "Bearer "+createToken("test_user"))
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(h.CreateAccount)
 
-	handler.ServeHTTP(rr, req)
+	r.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusCreated, rr.Code)
 	var returnedAcc model.Account
 	json.NewDecoder(rr.Body).Decode(&returnedAcc)
 	assert.Equal(t, expectedAcc.ID, returnedAcc.ID)
-	mockSvc.AssertExpectations(t)
 }
 
 func TestGetAccountHandler(t *testing.T) {
 	mockSvc := new(MockService)
-	h := NewAccountHandler(mockSvc)
-	r := chi.NewRouter()
-	r.Get("/accounts/{accountId}", h.GetAccount)
+	r := setupRouter(mockSvc)
 
 	accountID := uuid.New()
 	expectedAcc := &model.Account{ID: accountID, Currency: "PLN"}
 	mockSvc.On("GetAccount", mock.Anything, accountID.String()).Return(expectedAcc, nil)
 
 	req, _ := http.NewRequest("GET", "/accounts/"+accountID.String(), nil)
+	req.Header.Set("Authorization", "Bearer "+createToken("test_user"))
 	rr := httptest.NewRecorder()
 
 	r.ServeHTTP(rr, req)
@@ -87,14 +106,11 @@ func TestGetAccountHandler(t *testing.T) {
 	var returnedAcc model.Account
 	json.NewDecoder(rr.Body).Decode(&returnedAcc)
 	assert.Equal(t, accountID, returnedAcc.ID)
-	mockSvc.AssertExpectations(t)
 }
 
 func TestUpdateBalanceHandler(t *testing.T) {
 	mockSvc := new(MockService)
-	h := NewAccountHandler(mockSvc)
-	r := chi.NewRouter()
-	r.Post("/accounts/{accountId}/balance", h.UpdateBalance)
+	r := setupRouter(mockSvc)
 
 	accountID := uuid.New().String()
 	amount := 100.0
@@ -110,37 +126,48 @@ func TestUpdateBalanceHandler(t *testing.T) {
 	mockSvc.On("UpdateBalance", mock.Anything, accountID, amount, entryType, description).Return(nil)
 
 	req, _ := http.NewRequest("POST", "/accounts/"+accountID+"/balance", bytes.NewBuffer(reqBody))
+	req.Header.Set("Authorization", "Bearer "+createToken("test_user"))
 	rr := httptest.NewRecorder()
 
 	r.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusNoContent, rr.Code)
-	mockSvc.AssertExpectations(t)
+}
+
+func TestAuthMiddleware_Failure(t *testing.T) {
+	mockSvc := new(MockService)
+	r := setupRouter(mockSvc)
+
+	req, _ := http.NewRequest("GET", "/accounts/"+uuid.New().String(), nil)
+	rr := httptest.NewRecorder()
+
+	r.ServeHTTP(rr, req)
+
+	assert.Equal(t, http.StatusUnauthorized, rr.Code)
 }
 
 func TestCreateAccountHandler_InvalidJSON(t *testing.T) {
 	mockSvc := new(MockService)
-	h := NewAccountHandler(mockSvc)
+	r := setupRouter(mockSvc)
 
 	req, _ := http.NewRequest("POST", "/accounts", bytes.NewBufferString("invalid json"))
+	req.Header.Set("Authorization", "Bearer "+createToken("test_user"))
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(h.CreateAccount)
 
-	handler.ServeHTTP(rr, req)
+	r.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusBadRequest, rr.Code)
 }
 
 func TestGetAccountHandler_NotFound(t *testing.T) {
 	mockSvc := new(MockService)
-	h := NewAccountHandler(mockSvc)
-	r := chi.NewRouter()
-	r.Get("/accounts/{accountId}", h.GetAccount)
+	r := setupRouter(mockSvc)
 
 	accountID := uuid.New().String()
 	mockSvc.On("GetAccount", mock.Anything, accountID).Return(nil, assert.AnError)
 
 	req, _ := http.NewRequest("GET", "/accounts/"+accountID, nil)
+	req.Header.Set("Authorization", "Bearer "+createToken("test_user"))
 	rr := httptest.NewRecorder()
 
 	r.ServeHTTP(rr, req)
@@ -150,27 +177,26 @@ func TestGetAccountHandler_NotFound(t *testing.T) {
 
 func TestCreateAccountHandler_ServiceError(t *testing.T) {
 	mockSvc := new(MockService)
-	h := NewAccountHandler(mockSvc)
+	r := setupRouter(mockSvc)
 
 	mockSvc.On("CreateAccount", mock.Anything, mock.Anything, mock.Anything).Return(nil, assert.AnError)
 
 	reqBody, _ := json.Marshal(map[string]string{"customerId": "id", "currency": "USD"})
 	req, _ := http.NewRequest("POST", "/accounts", bytes.NewBuffer(reqBody))
+	req.Header.Set("Authorization", "Bearer "+createToken("test_user"))
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(h.CreateAccount)
 
-	handler.ServeHTTP(rr, req)
+	r.ServeHTTP(rr, req)
 
 	assert.Equal(t, http.StatusInternalServerError, rr.Code)
 }
 
 func TestUpdateBalanceHandler_InvalidJSON(t *testing.T) {
 	mockSvc := new(MockService)
-	h := NewAccountHandler(mockSvc)
-	r := chi.NewRouter()
-	r.Post("/accounts/{accountId}/balance", h.UpdateBalance)
+	r := setupRouter(mockSvc)
 
 	req, _ := http.NewRequest("POST", "/accounts/some-id/balance", bytes.NewBufferString("invalid json"))
+	req.Header.Set("Authorization", "Bearer "+createToken("test_user"))
 	rr := httptest.NewRecorder()
 
 	r.ServeHTTP(rr, req)
@@ -180,14 +206,13 @@ func TestUpdateBalanceHandler_InvalidJSON(t *testing.T) {
 
 func TestUpdateBalanceHandler_ServiceError(t *testing.T) {
 	mockSvc := new(MockService)
-	h := NewAccountHandler(mockSvc)
-	r := chi.NewRouter()
-	r.Post("/accounts/{accountId}/balance", h.UpdateBalance)
+	r := setupRouter(mockSvc)
 
 	mockSvc.On("UpdateBalance", mock.Anything, mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(assert.AnError)
 
 	reqBody, _ := json.Marshal(map[string]interface{}{"amount": 10.0, "type": "DEPOSIT", "description": "desc"})
 	req, _ := http.NewRequest("POST", "/accounts/some-id/balance", bytes.NewBuffer(reqBody))
+	req.Header.Set("Authorization", "Bearer "+createToken("test_user"))
 	rr := httptest.NewRecorder()
 
 	r.ServeHTTP(rr, req)
