@@ -14,6 +14,7 @@ import (
 type AccountService interface {
 	CreateAccount(ctx context.Context, customerID string, currency string) (*model.Account, error)
 	GetAccount(ctx context.Context, accountID string) (*model.Account, error)
+	UpdateBalance(ctx context.Context, accountID string, amount float64, entryType model.LedgerEntryType, description string) error
 }
 
 type accountService struct {
@@ -57,6 +58,10 @@ func (s *accountService) GetAccount(ctx context.Context, accountID string) (*mod
 		return nil, fmt.Errorf("account not found")
 	}
 	return acc, nil
+}
+
+func (s *accountService) UpdateBalance(ctx context.Context, accountID string, amount float64, entryType model.LedgerEntryType, description string) error {
+	return nil
 }
 
 // generateAccountNumber creates a dummy bank account number

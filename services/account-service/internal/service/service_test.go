@@ -97,3 +97,37 @@ func TestGetAccount_NotFound(t *testing.T) {
 	assert.Contains(t, err.Error(), "account not found")
 	mockRepo.AssertExpectations(t)
 }
+
+func TestUpdateBalance_WithdrawalInsufficientFunds(t *testing.T) {
+	mockRepo := new(MockRepository)
+	svc := NewAccountService(mockRepo)
+	ctx := context.Background()
+
+	accountID := uuid.New()
+	currentAcc := &model.Account{ID: accountID, Balance: 10.0}
+
+	mockRepo.On("GetAccount", accountID.String()).Return(currentAcc, nil)
+
+	err := svc.UpdateBalance(ctx, accountID.String(), -20.0, model.Withdrawal, "Withdrawal more than balance")
+
+	assert.Error(t, err)
+	assert.Contains(t, err.Error(), "insufficient funds")
+}
+
+func TestUpdateBalance_Success(t *testing.T) {
+	mockRepo := new(MockRepository)
+	svc := NewAccountService(mockRepo)
+	ctx := context.Background()
+
+	accountID := uuid.New()
+	currentAcc := &model.Account{ID: accountID, Balance: 100.0}
+	amount := 50.0
+
+	mockRepo.On("GetAccount", accountID.String()).Return(currentAcc, nil)
+	mockRepo.On("UpdateBalance", accountID.String(), amount, model.Deposit, "Success deposit").Return(nil)
+
+	err := svc.UpdateBalance(ctx, accountID.String(), amount, model.Deposit, "Success deposit")
+
+	assert.NoError(t, err)
+	mockRepo.AssertExpectations(t)
+}
