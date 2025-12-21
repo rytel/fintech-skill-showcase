@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"go-web-server/services/account-service/internal/model"
 	"go-web-server/services/account-service/internal/service"
 	"net/http"
 
@@ -23,15 +24,66 @@ func (h *AccountHandler) RegisterRoutes(r chi.Router) {
 }
 
 func (h *AccountHandler) CreateAccount(w http.ResponseWriter, r *http.Request) {
-	// Stub
+	var body struct {
+		CustomerID string `json:"customerId"`
+		Currency   string `json:"currency"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+
+	acc, err := h.service.CreateAccount(r.Context(), body.CustomerID, body.Currency)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusCreated, acc)
 }
 
 func (h *AccountHandler) GetAccount(w http.ResponseWriter, r *http.Request) {
-	// Stub
+	accountID := chi.URLParam(r, "accountId")
+	if accountID == "" {
+		respondWithError(w, http.StatusBadRequest, "Account ID is required")
+		return
+	}
+
+	acc, err := h.service.GetAccount(r.Context(), accountID)
+	if err != nil {
+		respondWithError(w, http.StatusNotFound, "Account not found")
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, acc)
 }
 
 func (h *AccountHandler) UpdateBalance(w http.ResponseWriter, r *http.Request) {
-	// Stub
+	accountID := chi.URLParam(r, "accountId")
+	if accountID == "" {
+		respondWithError(w, http.StatusBadRequest, "Account ID is required")
+		return
+	}
+
+	var body struct {
+		Amount      float64               `json:"amount"`
+		Type        model.LedgerEntryType `json:"type"`
+		Description string                `json:"description"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+
+	err := h.service.UpdateBalance(r.Context(), accountID, body.Amount, body.Type, body.Description)
+	if err != nil {
+		respondWithError(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {
