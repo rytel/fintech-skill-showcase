@@ -8,7 +8,7 @@
 
 ## Phase 2: Core Logic & Service Layer
 - [x] Task: Write tests for account creation and retrieval logic. 613e527
-- [ ] Task: Implement service layer for account management.
+- [x] Task: Implement service layer for account management. 3c701cf
 - [ ] Task: Write tests for multi-currency balance validation.
 - [ ] Task: Implement balance update logic with safety checks.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Logic & Service Layer' (Protocol in workflow.md)
