@@ -18,7 +18,7 @@
 - [x] Task: Write tests for REST handlers (JSON mapping, error responses). 3a11188
 - [x] Task: Implement REST API handlers using Go. e6decfb
 - [x] Task: Integrate JWT authentication for protected endpoints. e6d4c82
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: API & Connectivity' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 3: API & Connectivity' (Protocol in workflow.md)
 
 ## Phase 4: Integration & Cleanup
 - [ ] Task: Write integration tests for the full account lifecycle.
