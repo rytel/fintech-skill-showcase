@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
-	"go-web-server/services/account-service/internal/model"
-	"go-web-server/services/account-service/internal/repository"
+	"go-web-server/services/account-service/model"
+	"go-web-server/services/account-service/repository"
 	"math/rand"
 	"time"
 

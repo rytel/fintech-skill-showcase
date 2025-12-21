@@ -11,10 +11,10 @@ import (
 	"testing"
 	"time"
 
-	"go-web-server/services/account-service/internal/handler"
-	"go-web-server/services/account-service/internal/model"
-	"go-web-server/services/account-service/internal/repository"
-	"go-web-server/services/account-service/internal/service"
+	"go-web-server/services/account-service/handler"
+	"go-web-server/services/account-service/model"
+	"go-web-server/services/account-service/repository"
+	"go-web-server/services/account-service/service"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/golang-jwt/jwt/v5"

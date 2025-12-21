@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"go-web-server/services/account-service/internal/model"
+	"go-web-server/services/account-service/model"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/google/uuid"

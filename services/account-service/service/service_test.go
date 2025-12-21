@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"go-web-server/services/account-service/internal/model"
+	"go-web-server/services/account-service/model"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"

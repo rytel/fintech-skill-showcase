@@ -8,7 +8,7 @@ import (
 )
 
 func TestStatusHandler(t *testing.T) {
-	h := NewHandler(nil) // Repo nie jest potrzebne dla StatusHandler
+	h := NewHandler(nil, nil) // Repo i Service nie są potrzebne dla StatusHandler
 	req, err := http.NewRequest("GET", "/api/status", nil)
 	if err != nil {
 		t.Fatal(err)
@@ -30,7 +30,7 @@ handler.ServeHTTP(rr, req)
 }
 
 func TestTransactionHandler_InvalidMethod(t *testing.T) {
-	h := NewHandler(nil)
+	h := NewHandler(nil, nil)
 	req, _ := http.NewRequest("GET", "/api/transactions", nil)
 	rr := httptest.NewRecorder()
 
@@ -42,7 +42,7 @@ func TestTransactionHandler_InvalidMethod(t *testing.T) {
 }
 
 func TestTransactionHandler_MalformedJSON(t *testing.T) {
-	h := NewHandler(nil)
+	h := NewHandler(nil, nil)
 	req, _ := http.NewRequest("POST", "/api/transactions", strings.NewReader(`{invalid json}`))
 	rr := httptest.NewRecorder()
 
@@ -54,7 +54,7 @@ func TestTransactionHandler_MalformedJSON(t *testing.T) {
 }
 
 func TestAccountHandler_MissingUserID(t *testing.T) {
-	h := NewHandler(nil)
+	h := NewHandler(nil, nil)
 	req, _ := http.NewRequest("GET", "/api/account/", nil)
 	rr := httptest.NewRecorder()
 

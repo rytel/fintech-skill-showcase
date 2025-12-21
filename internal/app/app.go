@@ -7,6 +7,8 @@ import (
 
 	"go-web-server/internal/handler"
 	"go-web-server/internal/repository"
+	accRepo "go-web-server/services/account-service/repository"
+	accService "go-web-server/services/account-service/service"
 )
 
 func Run() {
@@ -21,7 +23,11 @@ func Run() {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
-	h := handler.NewHandler(repo)
+	// Microservices integration
+	newAccRepo := accRepo.NewPostgresAccountRepository(db)
+	newAccService := accService.NewAccountService(newAccRepo)
+
+	h := handler.NewHandler(repo, newAccService)
 	mux := http.NewServeMux()
 
 	// Routes

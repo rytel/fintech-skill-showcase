@@ -2,9 +2,9 @@ package handler
 
 import (
 	"encoding/json"
-	"go-web-server/services/account-service/internal/handler/middleware"
-	"go-web-server/services/account-service/internal/model"
-	"go-web-server/services/account-service/internal/service"
+	"go-web-server/services/account-service/handler/middleware"
+	"go-web-server/services/account-service/model"
+	"go-web-server/services/account-service/service"
 	"log"
 	"net/http"
 
