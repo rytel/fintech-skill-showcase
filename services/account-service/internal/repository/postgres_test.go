@@ -1,7 +1,10 @@
 package repository
 
 import (
+	"database/sql"
+	"fmt"
 	"testing"
+	"time"
 
 	"go-web-server/services/account-service/internal/model"
 
@@ -49,8 +52,9 @@ func TestGetAccount(t *testing.T) {
 	repo := NewPostgresAccountRepository(db)
 	id := uuid.New()
 
+	now := time.Now()
 	rows := sqlmock.NewRows([]string{"id", "customer_id", "account_number", "currency", "balance", "status", "created_at", "updated_at"}).
-		AddRow(id, uuid.New(), "PL123", "PLN", 100.0, "active", "2025-12-21", "2025-12-21")
+		AddRow(id, uuid.New(), "PL123", "PLN", 100.0, "active", now, now)
 
 	mock.ExpectQuery("SELECT (.+) FROM accounts WHERE id =").
 		WithArgs(id).
@@ -64,6 +68,45 @@ func TestGetAccount(t *testing.T) {
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
+}
+
+func TestGetAccount_NotFound(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("error opening mock db: %s", err)
+	}
+	defer db.Close()
+
+	repo := NewPostgresAccountRepository(db)
+	id := uuid.New()
+
+	mock.ExpectQuery("SELECT (.+) FROM accounts WHERE id =").
+		WithArgs(id).
+		WillReturnError(sql.ErrNoRows)
+
+	acc, err := repo.GetAccount(id.String())
+	assert.NoError(t, err)
+	assert.Nil(t, acc)
+}
+
+func TestUpdateBalance_LockError(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("error opening mock db: %s", err)
+	}
+	defer db.Close()
+
+	repo := NewPostgresAccountRepository(db)
+	accountID := uuid.New()
+
+	mock.ExpectBegin()
+	mock.ExpectQuery("SELECT balance FROM accounts WHERE id = (.+) FOR UPDATE").
+		WithArgs(accountID).
+		WillReturnError(fmt.Errorf("db error"))
+	mock.ExpectRollback()
+
+	err = repo.UpdateBalance(accountID.String(), 50.0, model.Deposit, "Test")
+	assert.Error(t, err)
 }
 
 func TestUpdateBalance_ACID(t *testing.T) {
