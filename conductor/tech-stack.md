@@ -2,7 +2,11 @@
 
 ## Backend Core
 - **Language:** Go 1.23
-    - *Rationale:* High performance, excellent concurrency primitives, and strongly typed, making it ideal for financial systems and microservices.
+    - *Rationale:* High performance, excellent concurrency primitives, and strongly typed.
+- **Router:** `chi` (v5)
+    - *Rationale:* Lightweight, idiomatic, and compatible with `net/http`.
+- **Utilities:** `google/uuid`
+    - *Rationale:* Standard for UUID generation.
 - **Architecture:** Microservices
     - *Rationale:* To learn and implement independent scaling, distributed data consistency, and service-to-service communication.
 
@@ -24,6 +28,6 @@
     - *Rationale:* To leverage managed services (Cloud Run/GKE, Cloud SQL) and professional infrastructure management.
 
 ## Testing & Quality
-- **Unit Testing:** Go Standard Library (`testing`) & `sqlmock`
+- **Unit Testing:** Go Standard Library (`testing`), `sqlmock`, and `testify` (assert/mock)
 - **Integration Testing:** Dockerized environment for end-to-end flow validation.
 - **API Documentation:** OpenAPI 3.0 (Swagger)

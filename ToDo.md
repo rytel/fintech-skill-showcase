@@ -4,101 +4,95 @@ Lista zadań jest podzielona na fazy, co pozwala na stopniową implementację lo
 
 ---
 
-## Faza 1: Fundamenty Serwera Go i Bazy Danych (Lokalne)
+## Faza 1: Fundamenty Serwera Go i Bazy Danych (Zakończona)
 
 ### 💾 Integracja z PostgreSQL (Lokalnie)
 
 - [x] **1.1** Instalacja sterownika PostgreSQL w Go (`github.com/lib/pq`).
 - [x] **1.2** Konfiguracja połączenia z bazą danych w kodzie Go (użycie zmiennych środowiskowych dla parametrów połączenia).
-- [x] **1.3** Utworzenie struktur Go (Modeli): `Account` (ID, UserID, Balance) i `Transaction` (ID, AccountID, Type, Amount).
-- [x] **1.4** Zaimplementowanie narzędzia do migracji DB (np. `goose` lub `migrate`) i utworzenie tabel dla `Account` i `Transaction`.
+- [x] **1.3** Utworzenie struktur Go (Modeli): `Account` i `Transaction`.
+- [x] **1.4** Zaimplementowanie narzędzia do migracji DB i utworzenie tabel.
 
 ### 🧪 Testy i Pierwsze API
 
-- [x] **1.5** Utworzenie pierwszego pliku testowego (`*_test.go`) i napisanie prostego **testu jednostkowego** dla funkcji (np. walidacji kwoty).
-- [x] **1.6** Implementacja endpointu **GET** `/api/account/{user_id}`, który pobiera i zwraca saldo konta danego użytkownika (użycie ścieżki URL do pobrania ID).
+- [x] **1.5** Utworzenie pierwszego testu jednostkowego (`*_test.go`).
+- [x] **1.6** Implementacja endpointu **GET** `/api/account/{user_id}`.
 
 ---
 
-## Faza 2: Transakcje i Logika Finansowa
+## Faza 2: Transakcje i Logika Finansowa (Zakończona)
 
 ### 💰 Logika Transakcyjna (Kluczowe)
 
-- [x] **2.1** Utworzenie endpointu **POST** `/api/transactions` do obsługi wpłat (`Deposit`) i wypłat (`Withdraw`).
-- [x] **2.2** Obsługa JSON wejściowego (payload) i dekodowanie go do struktury Go (`TransactionRequest`).
-- [x] **2.3** Zaimplementowanie mechanizmu **walidacji** (np. sprawdzenie wystarczającego salda dla wypłaty).
-- [x] **2.4** Zaimplementowanie **Transakcji DB (ACID)**: użycie `db.Begin()`, `tx.Commit()`, `tx.Rollback()` w celu zagwarantowania spójności danych przy operacjach na saldzie i historii.
+- [x] **2.1** Utworzenie endpointu **POST** `/api/transactions` (wpłaty/wypłaty).
+- [x] **2.2** Obsługa JSON wejściowego (`TransactionRequest`).
+- [x] **2.3** Zaimplementowanie walidacji biznesowej.
+- [x] **2.4** Zaimplementowanie **Transakcji DB (ACID)** (`BEGIN`, `COMMIT`, `ROLLBACK`).
 
 ### 🎯 Testy Integracyjne
 
-- [x] **2.5** Napisanie **testów integracyjnych**, które uruchamiają serwer, wysyłają żądania POST i weryfikują, czy zmiany w PostgreSQL są poprawne (weryfikacja salda i historii).
+- [x] **2.5** Napisanie testów integracyjnych weryfikujących spójność danych.
 
 ---
 
-## Faza 3: Docker Compose i Środowisko Wieloserwisowe
+## Faza 3: Docker Compose i Infrastruktura (Zakończona)
 
 ### 🐳 Lokalna Orkiestracja
 
-- [x] **3.1** Utworzenie pliku **`docker-compose.yml`** definiującego serwis `api-service` (Twój Go Server) i `db-service` (PostgreSQL). 
-- [x] **3.2** Skonfigurowanie połączenia z DB w `api-service` tak, aby używało nazwy serwisu PostgreSQL (`db-service`) jako hosta.
-- [x] **3.3** Konfiguracja wolumenu (volume) dla PostgreSQL, aby dane bazy przetrwały restarty kontenera.
-- [x] **3.4** Weryfikacja uruchomienia za pomocą `docker compose up -d` i sprawdzenie, że oba serwisy działają i komunikują się.
+- [x] **3.1** Utworzenie `docker-compose.yml` (`api-service` + `db-service`).
+- [x] **3.2** Konfiguracja sieci między kontenerami.
+- [x] **3.3** Wolumeny dla trwałości danych PostgreSQL.
 
 ---
 
-## Faza 4: Wdrożenie w Chmurze (Platforma Serwerless)
+## Faza 4: Modularny Monolit i Refaktoryzacja (Zakończona - Obecny Stan)
 
-### ☁️ Produkcja i Dostęp
+### 🏗 Nowoczesna Architektura (Modular Monolith)
 
-- [ ] **4.1** Utworzenie zdalnej, zarządzanej bazy danych **PostgreSQL** w wybranej chmurze (np. GCP Cloud SQL / Azure Database / AWS RDS).
-- [ ] **4.2** Zbudowanie obrazu Go i wypchnięcie go do **Rejestru Kontenerów** (np. Docker Hub, GCR, ECR).
-- [ ] **4.3** Wdrożenie obrazu Go na zarządzanej platformie serwerless (GCP Cloud Run / Azure Container Apps / AWS Fargate), podając mu Zmienne Środowiskowe połączenia ze zdalną bazą danych.
-- [ ] **4.4** Weryfikacja działania endpointu `/api/account/{user_id}` pod publicznym adresem URL.
+- [x] **4.1** Wprowadzenie **Standard Go Project Layout** (`cmd/`, `internal/`).
+- [x] **4.2** Wyodrębnienie domeny `AccountService` do `services/account-service/`.
+- [x] **4.3** Migracja identyfikatorów z `int` na **UUID** (`google/uuid`).
+- [x] **4.4** Implementacja wzorca **Gateway**: Główny handler (`internal/handler`) deleguje logikę do `AccountService`.
+- [x] **4.5** Aktualizacja schematu bazy danych (wsparcie dla UUID i relacji customer-account).
 
----
+### 🛡 Jakość Kodu
 
-## Faza 5: Aplikacja iOS (SwiftUI i Fintech)
-
-### 🍎 Frontend i Bezpieczeństwo
-
-- [ ] **5.1** Utworzenie interfejsu SwiftUI do wyświetlania salda i wykonania transakcji.
-- [ ] **5.2** Implementacja logiki sieciowej (Swift `URLSession` / `Decodable`) do pobierania salda z API Go.
-- [x] **5.3** (Backend Ready) Dodanie tokena autoryzacji (np. JWT) do nagłówka każdego żądania HTTP w Swift. (Server: `/api/login` & Middleware)
-- [ ] **5.4** Zaimplementowanie **Keychain Services** w iOS do bezpiecznego przechowywania tokena autoryzacyjnego.
-- [ ] **5.5** (Opcjonalnie) Badanie integracji z **SwiftData** w celu lokalnego buforowania historii transakcji.
-
-### 🧪 Środowisko Testowe (Backend)
-
-- [x] **5.6** Endpoint `/api/test/reset` do resetowania stanu bazy danych.
-
-- [x] **5.7** Endpoint `/api/account/{user_id}/transactions` do pobierania historii.
-
-
+- [x] **4.6** Dependency Injection (brak zmiennych globalnych).
+- [x] **4.7** Testy jednostkowe z `sqlmock`.
+- [x] **4.8** Testy integracyjne zaktualizowane do nowej architektury i UUID.
 
 ---
 
+## Faza 5: Aplikacja iOS i API Mobilne (W Trakcie)
 
+### 🍎 Integracja Frontend
 
-## Faza 6: Refaktoryzacja i Jakość Kodu (Senior Level)
+- [ ] **5.1** Utworzenie interfejsu SwiftUI (zewnętrzne repozytorium).
+- [ ] **5.2** Klient sieciowy Swift (URLSession).
+- [x] **5.3** Autoryzacja JWT (Backend Ready - `/api/login`).
+- [ ] **5.4** Bezpieczne przechowywanie tokenów (Keychain).
 
+### 🧪 Wsparcie Testów UI
 
+- [x] **5.5** Endpoint `/api/test/reset` do resetowania środowiska.
+- [x] **5.6** Endpoint `/api/account/{user_id}/transactions`.
 
-### 🏗 Architektura
+---
 
-- [x] **6.1** Wprowadzenie **Standard Go Project Layout** (`cmd/`, `internal/`).
+## Faza 6: Pełna Architektura Mikroserwisów (Planowane)
 
-- [x] **6.2** Hermetyzacja logiki biznesowej w pakiecie `internal/`.
+### 🚀 Skalowanie i Rozproszenie
 
-- [x] **6.3** Implementacja **Dependency Injection** dla handlerów i repozytoriów.
+- [ ] **6.1** Wprowadzenie komunikacji gRPC/HTTP między Gateway a Account Service (zastąpienie importu pakietu).
+- [ ] **6.2** Osobna baza danych dla Account Service.
+- [ ] **6.3** Wydzielenie `account-service` do osobnego kontenera w Docker Compose.
 
+---
 
+## Faza 7: Wdrożenie w Chmurze (Planowane)
 
-### 🛡 Testowanie i Stabilność
+### ☁️ Produkcja
 
-- [x] **6.4** Wprowadzenie **Testów Jednostkowych** z użyciem `sqlmock` dla warstwy danych.
-
-- [x] **6.5** Implementacja testów dla warstwy HTTP (`httptest`).
-
-- [x] **6.6** Zapewnienie pełnego pokrycia dla "ścieżek krytycznych" (brak środków, błędy walidacji).
-
-- [x] **6.7** Optymalizacja `Dockerfile` (multi-stage build z poprawnymi ścieżkami).
+- [ ] **7.1** Cloud SQL (PostgreSQL).
+- [ ] **7.2** Wypchnięcie obrazów do Container Registry.
+- [ ] **7.3** Wdrożenie na platformę Serverless (Cloud Run).

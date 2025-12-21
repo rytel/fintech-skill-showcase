@@ -6,10 +6,10 @@ Profesjonalny serwer backendowy napisany w Go, demonstrujący architekturę syst
 
 Projekt stosuje **Standard Go Project Layout**, zapewniający czystą separację obaw:
 
-- `cmd/server/`: Punkt wejścia aplikacji.
-- `internal/app/`: Logika inicjalizacji i bootstrapu serwera.
-- `internal/handler/`: Warstwa transportowa (HTTP/REST), obsługa żądań i odpowiedzi.
-- `internal/repository/`: Warstwa dostępu do danych (PostgreSQL), implementacja logiki transakcyjnej.
+- `cmd/server/`: Punkt wejścia aplikacji (minimalny bootstrap).
+- `internal/app/`: Logika inicjalizacji i wstrzykiwania zależności (DI).
+- `internal/handler/`: Warstwa transportowa (HTTP/REST), obsługa żądań i odpowiedzi (niezależna od bazy danych).
+- `internal/repository/`: Warstwa dostępu do danych (PostgreSQL), implementacja logiki transakcyjnej (ACID, `FOR UPDATE`).
 - `internal/model/`: Definicje struktur danych i modeli domenowych.
 - `migrations/`: Skrypty SQL definiujące schemat bazy danych.
 - `tests/`: Testy integracyjne (End-to-End).
@@ -18,8 +18,22 @@ Projekt stosuje **Standard Go Project Layout**, zapewniający czystą separację
 
 - **Język:** Go 1.23
 - **Baza danych:** PostgreSQL 15
-- **Konteneryzacja:** Docker & Docker Compose
+- **Konteneryzacja:** Docker & Docker Compose (Multi-stage build)
 - **Testowanie:** Go Testing Package + `sqlmock` dla testów jednostkowych
+
+## 📜 Standardy i Kontrakty
+
+### Standardy Kodowania
+1.  **Dependency Injection**: Nie używamy zmiennych globalnych. Zależności są przekazywane przez konstruktory (np. `NewHandler`, `NewPostgresRepository`).
+2.  **Enkapsulacja**: Cała kluczowa logika biznesowa MUSI znajdować się w `internal/`, aby nie była dostępna dla zewnętrznych modułów.
+3.  **Bezpieczeństwo (Safety)**: Operacje na saldzie muszą być atomowe i wykonywane w ramach transakcji bazy danych.
+4.  **Testowanie**:
+    -   Testy jednostkowe z `sqlmock` dla repozytoriów.
+    -   Testy integracyjne w `tests/` wymagające uruchomionego środowiska (Docker Compose).
+
+### Kontrakt API
+-   Wszystkie endpointy zwracają **JSON** z nagłówkiem `Content-Type: application/json`.
+-   Błędy API są zwracane w czytelnym formacie z odpowiednimi kodami HTTP (400, 404, 500).
 
 ## 🏁 Jak uruchomić?
 
@@ -47,5 +61,5 @@ go test -v ./tests/integration_test.go
 ## 🔐 Kluczowe Funkcjonalności
 
 - **Transakcyjność ACID:** Wszystkie operacje finansowe (wpłaty/wypłaty) są wykonywane w ramach transakcji DB z blokowaniem wierszy (`FOR UPDATE`), co zapobiega wyścigom (race conditions).
-- **Enkapsulacja:** Kluczowa logika biznesowa znajduje się w katalogu `internal/`, co gwarantuje, że nie zostanie ona użyta niezgodnie z przeznaczeniem przez zewnętrzne moduły.
 - **Automatyczne Migracje:** Serwer automatycznie inicjalizuje schemat bazy danych przy starcie.
+- **Integracja iOS:** Dedykowane endpointy i wsparcie dla testów UI (zobacz [IOS_API.md](IOS_API.md)).

@@ -95,14 +95,17 @@ func (h *Handler) TransactionHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Proxy to new AccountService for balance updates
 	var entryType accModel.LedgerEntryType
+	finalAmount := req.Amount
+
 	if req.Type == model.Deposit {
 		entryType = accModel.Deposit
 	} else {
 		entryType = accModel.Withdrawal
+		finalAmount = -req.Amount
 	}
 
 	// We assume req.UserID is the accountID for this bridge
-	err := h.accService.UpdateBalance(r.Context(), req.UserID, req.Amount, entryType, "Legacy Transaction Proxy")
+	err := h.accService.UpdateBalance(r.Context(), req.UserID, finalAmount, entryType, "Legacy Transaction Proxy")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

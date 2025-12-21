@@ -19,5 +19,6 @@ A professional, high-integrity banking server implemented in Go, designed to ser
     - Immutable audit logs for every state change and access attempt.
 - **Asynchronous Processing:** Background task handling for push notifications and reporting.
 
-## Target Architecture
-- **Microservices:** A distributed system of specialized services (e.g., Auth Service, Transaction Service, FX Service) containerized with Docker for seamless deployment and scaling.
+## Current Architecture
+- **Account Service:** A dedicated microservice managing customer accounts, multi-currency balances, and atomic balance updates with strict ACID compliance.
+- **Target Microservices:** Future extraction of Auth Service, Transaction Service, and FX Service into independent units.

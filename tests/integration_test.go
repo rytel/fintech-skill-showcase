@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 	"go-web-server/internal/model"
 )
@@ -17,51 +18,61 @@ const (
 	dbDSN  = "host=localhost port=5432 user=postgres password=secret dbname=fintech_db sslmode=disable"
 )
 
-// Helper to reset DB state for a specific user
-func resetUser(t *testing.T, userID string) {
+// Helper to reset DB state (Truncate all relevant tables)
+func resetDB(t *testing.T) {
 	db, err := sql.Open("postgres", dbDSN)
 	if err != nil {
 		t.Fatalf("Failed to connect to DB: %v", err)
 	}
 	defer db.Close()
 
-	// Clean up transactions and account for the user
-	// Note: In a real scenario, we might want to truncate or use a separate test DB.
-	// For now, we cascade delete or delete by ID if we had it, but deleting by user_id requires knowing the account_id for transactions.
-	// Let's simplified: delete account (which should cascade transactions if set up, but let's do it manually if not)
-	
-	// First get account ID
-	var accountID int
-	err = db.QueryRow("SELECT id FROM accounts WHERE user_id = $1", userID).Scan(&accountID)
-	if err == nil {
-		_, _ = db.Exec("DELETE FROM transactions WHERE account_id = $1", accountID)
-		_, _ = db.Exec("DELETE FROM accounts WHERE id = $1", accountID)
+	// Truncate tables to ensure clean state
+	// Order matters due to foreign keys: ledger_entries -> accounts -> customers
+	_, err = db.Exec("TRUNCATE TABLE ledger_entries, accounts, customers CASCADE")
+	if err != nil {
+		t.Logf("Warning: Failed to truncate tables: %v", err)
 	}
 }
 
 func TestTransactionFlow(t *testing.T) {
 	// 0. Setup
-	testUserID := "integration_test_user"
-	resetUser(t, testUserID)
-	defer resetUser(t, testUserID)
+	resetDB(t)
+	// We don't defer reset here to allow inspection if test fails, 
+	// but normally you might want to. Ideally use a unique ID per test run.
 
-	// 1. Create Account (Simulated by inserting directly to DB, as we don't have CreateAccount API yet)
 	db, err := sql.Open("postgres", dbDSN)
 	if err != nil {
 		t.Fatalf("Failed to connect to DB: %v", err)
 	}
 	defer db.Close()
 
-	_, err = db.Exec("INSERT INTO accounts (user_id, balance) VALUES ($1, $2)", testUserID, 0.0)
+	// 1. Create Customer and Account directly in DB
+	customerID := uuid.New()
+	accountID := uuid.New()
+	accountNumber := "PL" + uuid.New().String()[0:20] // Fake IBAN-ish
+	
+	// Create Customer
+	_, err = db.Exec("INSERT INTO customers (id, external_id, full_name) VALUES ($1, $2, $3)", 
+		customerID, "ext_user_"+customerID.String(), "Integration Test User")
 	if err != nil {
-		t.Fatalf("Failed to create test user: %v", err)
+		t.Fatalf("Failed to create customer: %v", err)
+	}
+
+	// Create Account
+	// Note: New schema has balance default 0, currency required
+	_, err = db.Exec(`INSERT INTO accounts (id, customer_id, account_number, currency, balance, status) 
+		VALUES ($1, $2, $3, $4, $5, $6)`, 
+		accountID, customerID, accountNumber, "USD", 0.0, "active")
+	if err != nil {
+		t.Fatalf("Failed to create account: %v", err)
 	}
 
 	client := &http.Client{Timeout: 5 * time.Second}
 
 	// 2. Test Deposit
+	// IMPORTANT: The current Handler acts as a bridge and treats the 'UserID' field in JSON as the AccountID UUID.
 	depositReq := model.TransactionRequest{
-		UserID: testUserID,
+		UserID: accountID.String(), 
 		Type:   model.Deposit,
 		Amount: 100.0,
 	}
@@ -74,11 +85,17 @@ func TestTransactionFlow(t *testing.T) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		t.Errorf("Expected status 200 for deposit, got %d", resp.StatusCode)
+		// Read body for debug
+		buf := new(bytes.Buffer)
+		buf.ReadFrom(resp.Body)
+		t.Fatalf("Expected status 200 for deposit, got %d. Body: %s", resp.StatusCode, buf.String())
 	}
 
 	var account model.Account
+	// Re-decode response
+	// Note: The handler returns a mapped legacy model, so balance should be plain float
 	if err := json.NewDecoder(resp.Body).Decode(&account); err != nil {
+		// Try to read body again if decode fails (though body is consumed, usually need to peek)
 		t.Fatalf("Failed to decode response: %v", err)
 	}
 
@@ -88,7 +105,7 @@ func TestTransactionFlow(t *testing.T) {
 
 	// 3. Test Withdraw
 	withdrawReq := model.TransactionRequest{
-		UserID: testUserID,
+		UserID: accountID.String(),
 		Type:   model.Withdraw,
 		Amount: 40.0,
 	}
@@ -114,7 +131,7 @@ func TestTransactionFlow(t *testing.T) {
 
 	// 4. Test Overdraft (Withdraw more than balance)
 	overdraftReq := model.TransactionRequest{
-		UserID: testUserID,
+		UserID: accountID.String(),
 		Type:   model.Withdraw,
 		Amount: 100.0,
 	}
