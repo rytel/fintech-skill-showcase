@@ -15,7 +15,7 @@
 
 ## Phase 3: API & Connectivity
 - [x] Task: Define OpenAPI specification for the Account Service. fdfa87a
-- [ ] Task: Write tests for REST handlers (JSON mapping, error responses).
+- [x] Task: Write tests for REST handlers (JSON mapping, error responses). 3a11188
 - [ ] Task: Implement REST API handlers using Go.
 - [ ] Task: Integrate JWT authentication for protected endpoints.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: API & Connectivity' (Protocol in workflow.md)
