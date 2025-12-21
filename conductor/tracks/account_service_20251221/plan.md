@@ -7,7 +7,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation & Data Model' (Protocol in workflow.md)
 
 ## Phase 2: Core Logic & Service Layer
-- [ ] Task: Write tests for account creation and retrieval logic.
+- [x] Task: Write tests for account creation and retrieval logic. 613e527
 - [ ] Task: Implement service layer for account management.
 - [ ] Task: Write tests for multi-currency balance validation.
 - [ ] Task: Implement balance update logic with safety checks.
