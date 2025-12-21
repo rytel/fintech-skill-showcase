@@ -61,6 +61,23 @@ func (s *accountService) GetAccount(ctx context.Context, accountID string) (*mod
 }
 
 func (s *accountService) UpdateBalance(ctx context.Context, accountID string, amount float64, entryType model.LedgerEntryType, description string) error {
+	acc, err := s.repo.GetAccount(accountID)
+	if err != nil {
+		return fmt.Errorf("failed to get account: %w", err)
+	}
+	if acc == nil {
+		return fmt.Errorf("account not found")
+	}
+
+	// Business Rule: Ensure sufficient funds for withdrawals
+	if amount < 0 && acc.Balance+amount < 0 {
+		return fmt.Errorf("insufficient funds: current balance %.2f, requested withdrawal %.2f", acc.Balance, -amount)
+	}
+
+	if err := s.repo.UpdateBalance(accountID, amount, entryType, description); err != nil {
+		return fmt.Errorf("failed to update balance in repository: %w", err)
+	}
+
 	return nil
 }
 
