@@ -22,6 +22,6 @@
 
 ## Phase 4: Integration & Cleanup
 - [x] Task: Write integration tests for the full account lifecycle. 68a8c7e
-- [ ] Task: Implement health check endpoints and logging.
+- [x] Task: Implement health check endpoints and logging. d1ec499
 - [ ] Task: Refactor existing monolithic references to use the new Account Service (mocking/proxying).
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Integration & Cleanup' (Protocol in workflow.md)
