@@ -11,7 +11,7 @@
 - [x] Task: Implement service layer for account management. 3c701cf
 - [x] Task: Write tests for multi-currency balance validation. 1747eb8
 - [x] Task: Implement balance update logic with safety checks. 20c64e7
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Logic & Service Layer' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Core Logic & Service Layer' (Protocol in workflow.md)
 
 ## Phase 3: API & Connectivity
 - [ ] Task: Define OpenAPI specification for the Account Service.
