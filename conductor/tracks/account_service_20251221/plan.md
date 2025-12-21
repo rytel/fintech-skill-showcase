@@ -24,4 +24,4 @@
 - [x] Task: Write integration tests for the full account lifecycle. 68a8c7e
 - [x] Task: Implement health check endpoints and logging. d1ec499
 - [x] Task: Refactor existing monolithic references to use the new Account Service (mocking/proxying). 51ae947
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Integration & Cleanup' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 4: Integration & Cleanup' (Protocol in workflow.md)
