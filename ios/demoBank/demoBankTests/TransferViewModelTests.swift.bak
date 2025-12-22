@@ -1,0 +1,42 @@
+import XCTest
+@testable import demoBank
+
+final class TransferViewModelTests: XCTestCase {
+    
+    func testValidationLogic() {
+        let viewModel = TransferViewModel(apiService: MockAPIService())
+        
+        // Initial state
+        XCTAssertFalse(viewModel.isRecipientValid)
+        
+        // Recipient validation
+        viewModel.recipientName = "Jan Kowalski"
+        viewModel.recipientAccount = "1234567890"
+        XCTAssertTrue(viewModel.isRecipientValid)
+        
+        // Amount validation
+        XCTAssertFalse(viewModel.isAmountValid)
+        viewModel.amount = "100.50"
+        viewModel.title = "Test transfer"
+        XCTAssertTrue(viewModel.isAmountValid)
+    }
+    
+    func testStepTransitions() {
+        let viewModel = TransferViewModel(apiService: MockAPIService())
+        
+        // Recipient -> Amount
+        viewModel.recipientName = "Jan"
+        viewModel.recipientAccount = "1234567890"
+        viewModel.nextStep()
+        XCTAssertEqual(viewModel.currentStep, .amount)
+        
+        // Amount -> Confirmation
+        viewModel.amount = "50"
+        viewModel.title = "Title"
+        viewModel.nextStep()
+        XCTAssertEqual(viewModel.currentStep, .confirmation)
+        
+        // Confirmation -> Success (Simulated)
+        // Note: performTransfer is private and uses Task, so we'd normally test via a mock API service
+    }
+}

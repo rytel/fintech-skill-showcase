@@ -73,12 +73,12 @@ func (h *Handler) getAccount(w http.ResponseWriter, r *http.Request, userID stri
 func (h *Handler) getTransactions(w http.ResponseWriter, r *http.Request, userID string) {
 	// For transactions, we would also proxy, but for this track, we'll stick to basic account operations
 	// and mark this as potentially legacy or requiring update.
-	transactions, err := h.repo.GetTransactions(userID)
+	rows, err := h.repo.GetTransactionsRaw(userID) // Using a more direct query
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	h.sendJSON(w, http.StatusOK, transactions)
+	h.sendJSON(w, http.StatusOK, rows)
 }
 
 func (h *Handler) TransactionHandler(w http.ResponseWriter, r *http.Request) {
@@ -120,11 +120,9 @@ func (h *Handler) mapToMonolithAccount(acc *accModel.Account) *model.Account {
 	if acc == nil {
 		return nil
 	}
-	// Simple hash-based ID conversion for legacy compatibility
-	legacyID := int(acc.ID[0])<<24 | int(acc.ID[1])<<16 | int(acc.ID[2])<<8 | int(acc.ID[3])
 	
 	return &model.Account{
-		ID:        legacyID,
+		ID:        acc.ID.String(),
 		UserID:    acc.CustomerID.String(),
 		Balance:   acc.Balance,
 		CreatedAt: acc.CreatedAt,

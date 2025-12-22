@@ -21,8 +21,8 @@
     - *Rationale:* Modern, safe, and the standard for native iOS development.
 - **UI Framework:** SwiftUI
     - *Rationale:* Declarative UI framework for building modern interfaces across Apple platforms.
-- **Architecture:** MVVM (Model-View-ViewModel)
-    - *Rationale:* Standard architectural pattern for SwiftUI applications to ensure separation of concerns.
+- **Architecture:** MVVM-C (Model-View-ViewModel-Coordinator)
+    - *Rationale:* Standard architectural pattern for SwiftUI applications enhanced with Coordinators for decoupled navigation and Dependency Injection for testability.
 - **Networking:** `URLSession` with `Codable`
     - *Rationale:* Native Apple frameworks for high-performance networking and JSON parsing.
 

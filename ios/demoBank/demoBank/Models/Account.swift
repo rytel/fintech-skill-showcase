@@ -6,7 +6,7 @@
 import Foundation
 
 struct Account: Codable {
-    let id: Int
+    let id: String
     let userId: String
     let balance: Double
     let createdAt: Date

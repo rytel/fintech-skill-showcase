@@ -117,14 +117,8 @@ func (r *PostgresRepository) CreateTransaction(req model.TransactionRequest) (*m
 	return &account, nil
 }
 
-func (r *PostgresRepository) GetTransactions(userID string) ([]model.Transaction, error) {
-	var accountID int
-	err := r.db.QueryRow("SELECT id FROM accounts WHERE user_id = $1", userID).Scan(&accountID)
-	if err != nil {
-		return nil, err
-	}
-
-	rows, err := r.db.Query(`SELECT id, account_id, type, amount, created_at FROM transactions WHERE account_id = $1 ORDER BY created_at DESC`, accountID)
+func (r *PostgresRepository) GetTransactionsRaw(accountID string) ([]model.Transaction, error) {
+	rows, err := r.db.Query(`SELECT id, account_id, type, amount, created_at FROM ledger_entries WHERE account_id = $1 ORDER BY created_at DESC`, accountID)
 	if err != nil {
 		return nil, err
 	}
@@ -133,9 +127,20 @@ func (r *PostgresRepository) GetTransactions(userID string) ([]model.Transaction
 	var transactions []model.Transaction
 	for rows.Next() {
 		var t model.Transaction
-		if err := rows.Scan(&t.ID, &t.AccountID, &t.Type, &t.Amount, &t.CreatedAt); err != nil {
+		var typeStr string
+		if err := rows.Scan(&t.ID, &t.AccountID, &typeStr, &t.Amount, &t.CreatedAt); err != nil {
 			return nil, err
 		}
+		
+		switch typeStr {
+		case "deposit", "transfer_in":
+			t.Type = model.Deposit
+		case "withdrawal", "transfer_out":
+			t.Type = model.Withdraw
+		default:
+			t.Type = model.Deposit
+		}
+		
 		transactions = append(transactions, t)
 	}
 	return transactions, nil

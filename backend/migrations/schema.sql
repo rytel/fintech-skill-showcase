@@ -39,3 +39,18 @@ CREATE TABLE IF NOT EXISTS ledger_entries (
 CREATE INDEX IF NOT EXISTS idx_accounts_customer_id ON accounts(customer_id);
 CREATE INDEX IF NOT EXISTS idx_ledger_entries_account_id ON ledger_entries(account_id);
 CREATE INDEX IF NOT EXISTS idx_customers_external_id ON customers(external_id);
+
+-- Seed Initial Data
+INSERT INTO customers (id, external_id, full_name) 
+VALUES ('de305d54-75b4-431b-adb2-eb6b9e546014', 'test_user', 'Jan Kowalski')
+ON CONFLICT (external_id) DO NOTHING;
+
+INSERT INTO accounts (id, customer_id, account_number, currency, balance, status)
+VALUES ('de305d54-75b4-431b-adb2-eb6b9e546014', 'de305d54-75b4-431b-adb2-eb6b9e546014', 'PL12345678900000000012345678', 'PLN', 12500.50, 'active')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO ledger_entries (account_id, type, amount, balance_after, description)
+VALUES 
+('de305d54-75b4-431b-adb2-eb6b9e546014', 'deposit', 10000.00, 10000.00, 'Wpłata początkowa'),
+('de305d54-75b4-431b-adb2-eb6b9e546014', 'deposit', 2500.50, 12500.50, 'Premia świąteczna')
+ON CONFLICT DO NOTHING;

@@ -35,7 +35,7 @@ struct ModelTests {
     @Test func accountDecoding() throws {
         let jsonString = """
         {
-            "id": 1,
+            "id": "de305d54-75b4-431b-adb2-eb6b9e546014",
             "user_id": "test_user",
             "balance": 1000,
             "created_at": "2023-01-01T12:00:00Z"
@@ -46,7 +46,7 @@ struct ModelTests {
         decoder.dateDecodingStrategy = .iso8601
         let account = try decoder.decode(Account.self, from: data)
         
-        #expect(account.id == 1)
+        #expect(account.id == "de305d54-75b4-431b-adb2-eb6b9e546014")
         #expect(account.userId == "test_user")
         #expect(account.balance == 1000.0)
     }
@@ -55,8 +55,8 @@ struct ModelTests {
         let jsonString = """
         [
             {
-                "id": 1,
-                "account_id": 1,
+                "id": "de305d54-75b4-431b-adb2-eb6b9e546014",
+                "account_id": "de305d54-75b4-431b-adb2-eb6b9e546014",
                 "type": "DEPOSIT",
                 "amount": 100,
                 "created_at": "2023-01-01T12:00:00Z"
@@ -69,8 +69,8 @@ struct ModelTests {
         let transactions = try decoder.decode([Transaction].self, from: data)
         
         #expect(transactions.count == 1)
-        #expect(transactions[0].id == 1)
-        #expect(transactions[0].accountId == 1)
+        #expect(transactions[0].id == "de305d54-75b4-431b-adb2-eb6b9e546014")
+        #expect(transactions[0].accountId == "de305d54-75b4-431b-adb2-eb6b9e546014")
         #expect(transactions[0].type == .deposit)
         #expect(transactions[0].amount == 100.0)
     }

@@ -7,15 +7,18 @@ import Foundation
 
 enum TransactionType: String, Codable {
     case deposit = "DEPOSIT"
-    case withdraw = "WITHDRAW"
+    case withdrawal = "WITHDRAWAL"
+    case transferIn = "TRANSFER_IN"
+    case transferOut = "TRANSFER_OUT"
 }
 
 struct Transaction: Codable {
-    let id: Int
-    let accountId: Int
+    let id: String
+    let accountId: String
     let type: TransactionType
     let amount: Double
     let createdAt: Date
+    let description: String?
     
     enum CodingKeys: String, CodingKey {
         case id
@@ -23,5 +26,6 @@ struct Transaction: Codable {
         case type
         case amount
         case createdAt = "created_at"
+        case description
     }
 }

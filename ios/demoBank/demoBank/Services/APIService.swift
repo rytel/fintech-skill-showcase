@@ -5,7 +5,7 @@
 
 import Foundation
 
-final class APIService {
+final class APIService: APIServiceProtocol {
     private let session: URLSession
     private let baseURL = URL(string: "http://localhost:8080")!
     
@@ -38,6 +38,11 @@ final class APIService {
         
         let (data, response) = try await session.data(for: request)
         
+        // Debug: Print raw response
+        if let jsonString = String(data: data, encoding: .utf8) {
+            print("API Response for \(path): \(jsonString)")
+        }
+        
         guard let httpResponse = response as? HTTPURLResponse else {
             throw APIError.unknown
         }
@@ -51,7 +56,33 @@ final class APIService {
         
         do {
             let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
+            let formatter = DateFormatter()
+            formatter.calendar = Calendar(identifier: .iso8601)
+            formatter.locale = Locale(identifier: "en_US_POSIX")
+            formatter.timeZone = TimeZone(secondsFromGMT: 0)
+            
+            decoder.dateDecodingStrategy = .custom({ decoder in
+                let container = try decoder.singleValueContainer()
+                let dateString = try container.decode(String.self)
+                
+                let formats = [
+                    "yyyy-MM-dd'T'HH:mm:ss.SSSSSSZ",
+                    "yyyy-MM-dd'T'HH:mm:ss.SSSZ",
+                    "yyyy-MM-dd'T'HH:mm:ssZ",
+                    "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'",
+                    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'",
+                    "yyyy-MM-dd'T'HH:mm:ss'Z'"
+                ]
+                
+                for format in formats {
+                    formatter.dateFormat = format
+                    if let date = formatter.date(from: dateString) {
+                        return date
+                    }
+                }
+                
+                throw DecodingError.dataCorruptedError(in: container, debugDescription: "Cannot decode date string \(dateString)")
+            })
             return try decoder.decode(T.self, from: data)
         } catch {
             throw APIError.decodingError(error.localizedDescription)
@@ -73,5 +104,15 @@ final class APIService {
     // Transactions
     func fetchTransactions(userId: String) async throws -> [Transaction] {
         return try await performRequest(path: "/api/account/\(userId)/transactions")
+    }
+    
+    func performTransaction(userId: String, type: TransactionType, amount: Double) async throws -> Account {
+        let requestBody: [String: Any] = [
+            "user_id": userId,
+            "type": type.rawValue,
+            "amount": amount
+        ]
+        let body = try JSONSerialization.data(withJSONObject: requestBody)
+        return try await performRequest(path: "/api/transactions", method: "POST", body: body)
     }
 }
