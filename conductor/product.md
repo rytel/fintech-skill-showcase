@@ -2,14 +2,14 @@
 This app is being created for educational purposes to learn how to build a working bank from scratch.
 
 # Product Vision: Edu-Bank Backend
-A professional, high-integrity banking server implemented in Go, designed to serve as a secure and scalable backend for a future iOS mobile application. The project follows a **Cloud-Native approach**, utilizing containerization and cloud infrastructure to ensure production-grade reliability.
+A professional, high-integrity banking system consisting of a Go backend and a native iOS application. The project follows a **Cloud-Native approach**, utilizing containerization and cloud infrastructure to ensure production-grade reliability.
 
 ## Core Objectives
 - **Operational Integrity:** Ensure 100% correctness of financial operations using ACID-compliant transactions and row-level locking.
 - **Modern Security:** Implement industry-leading authentication (Passkeys/WebAuthn) and comprehensive audit logging.
 - **Infinite Scalability:** Utilize a microservices architecture to allow independent scaling of core banking functions.
 - **Cloud-Native Foundations:** Deployment-ready via **Docker** and optimized for **Google Cloud Platform (GCP)** to learn modern DevOps and infrastructure management.
-- **Mobile-First Connectivity:** Provide a robust, well-documented RESTful API optimized for integration with iOS (Swift).
+- **Mobile-First Experience:** A native iOS application built with Swift and SwiftUI, integrated with a robust, well-documented RESTful API.
 
 ## Key Features
 - **Account & Multi-currency Management:** Support for multiple account types and built-in currency exchange (FX) capabilities.
@@ -21,4 +21,5 @@ A professional, high-integrity banking server implemented in Go, designed to ser
 
 ## Current Architecture
 - **Account Service:** A dedicated microservice managing customer accounts, multi-currency balances, and atomic balance updates with strict ACID compliance.
+- **iOS Application (Foundation):** A native Swift application with a dedicated data layer (Models), secure storage (Keychain), and a robust networking layer (TDD-verified).
 - **Target Microservices:** Future extraction of Auth Service, Transaction Service, and FX Service into independent units.
