@@ -14,7 +14,7 @@ final class DashboardViewModel: ObservableObject {
         self.apiService = apiService
     }
     
-    @MainActor
+    
     func fetchData() async {
         isLoading = true
         errorMessage = nil

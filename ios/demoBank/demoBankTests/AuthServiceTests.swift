@@ -1,29 +1,24 @@
-import XCTest
+import Testing
 import Combine
+import Foundation
 @testable import demoBank
 
-final class AuthServiceTests: XCTestCase {
-    var cancellables: Set<AnyCancellable> = []
+@MainActor
+final class AuthServiceTests {
     
-    func testLoginReturnsSuccess() {
+    @Test func loginReturnsSuccess() async throws {
         let mockAPI = MockAPIServiceForAuth()
-        let service = AuthService(apiService: mockAPI)
-        let expectation = XCTestExpectation(description: "Login response")
-        
+        let service = await AuthService(apiService: mockAPI)
         let request = LoginRequest(username: "test", password: "password")
         
-        service.login(credentials: request)
-            .sink { completion in
-                if case .failure = completion {
-                    XCTFail("Login should not fail")
-                }
-            } receiveValue: { response in
-                XCTAssertEqual(response.token, "mock-token")
-                expectation.fulfill()
-            }
-            .store(in: &cancellables)
+        // Using AsyncPublisher to test Combine stream in a modern way
+        var response: LoginResponse?
+        for try await value in service.login(credentials: request).values {
+            response = value
+            break
+        }
         
-        wait(for: [expectation], timeout: 2.0)
+        #expect(response?.token == "mock-token")
     }
 }
 

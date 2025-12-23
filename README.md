@@ -69,28 +69,19 @@ cd backend
 make test
 ```
 
-### 📱 iOS (Important!)
-⚠️ **NOTE:** UI tests (`demoBankUITests`) perform real network requests and log into the system (Integration Tests).
+### 📱 iOS
+The iOS application includes both Unit Tests and UI Tests.
 
-**For iOS UI tests to pass, the backend MUST be running in the background.** If the backend is not active, UI tests will fail due to connection errors.
+- **Unit Tests**: Test individual components (ViewModels, Services) using internal mocks.
+- **UI Tests**: Run against a **mocked environment** (via `-useMockData` launch argument).
 
-**Correct testing procedure:**
+**Running Tests:**
+No backend is required to run iOS tests.
 
-1. **Ensure the backend is running:**
+1. **In Xcode:** Press **Cmd+U**.
+2. **In Terminal:**
    ```bash
-   cd backend && docker-compose up -d
-   ```
-
-2. **Run iOS tests:**
-   - **In Xcode:** Press **Cmd+U**.
-   - **In Terminal:**
-     ```bash
-     xcodebuild test -project ios/demoBank/demoBank.xcodeproj \
-     -scheme demoBank \
-     -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
-     ```
-
-3. **(Optional) Clean up after testing:**
-   ```bash
-   cd backend && docker-compose down
+   xcodebuild test -project ios/demoBank/demoBank.xcodeproj \
+   -scheme demoBank \
+   -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
    ```

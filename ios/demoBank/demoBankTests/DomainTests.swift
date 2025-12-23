@@ -8,6 +8,8 @@ import Foundation
 @testable import demoBank
 
 @Suite(.serialized)
+
+@MainActor
 struct DomainTests {
     
     // MARK: - Keychain Tests
@@ -70,12 +72,12 @@ struct DomainTests {
         }
         
         // Ważne: Zapisujemy token bezpośrednio przed testem w tym samym wątku (dzięki .serialized)
-        KeychainHelper.shared.saveToken("some-token")
+        await KeychainHelper.shared.saveToken("some-token")
         
         let account = try await apiService.fetchAccount(userId: "test_user")
         #expect(account.balance == 1000.0)
         
-        KeychainHelper.shared.deleteToken()
+        await KeychainHelper.shared.deleteToken()
     }
     
     @Test func apiUnauthorizedError() async throws {

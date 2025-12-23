@@ -1,10 +1,12 @@
-import XCTest
+import Testing
 @testable import demoBank
 
-final class MainCoordinatorTests: XCTestCase {
+
+@MainActor
+final class MainCoordinatorTests {
     
-    func testMainCoordinatorInitializesWithChildCoordinators() {
+    @Test func mainCoordinatorInitializesWithChildCoordinators() {
         let coordinator = MainCoordinator(factory: ViewModelFactory())
-        XCTAssertTrue(coordinator.childCoordinators.isEmpty)
+        #expect(coordinator.childCoordinators.isEmpty)
     }
 }

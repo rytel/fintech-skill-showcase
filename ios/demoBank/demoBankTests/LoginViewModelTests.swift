@@ -1,29 +1,23 @@
-import XCTest
+import Testing
 import Combine
+import Foundation
 @testable import demoBank
 
-final class LoginViewModelTests: XCTestCase {
-    var cancellables: Set<AnyCancellable> = []
+@MainActor
+struct LoginViewModelTests {
     
-    func testLoginSuccessUpdatesState() {
+    @Test func loginSuccessUpdatesState() async throws {
         let mockAuthService = MockAuthService()
         let viewModel = LoginViewModel(authService: mockAuthService)
         
-        let expectation = XCTestExpectation(description: "Login success")
-        
-        viewModel.$isLoggedIn
-            .dropFirst()
-            .sink { isLoggedIn in
-                if isLoggedIn {
-                    expectation.fulfill()
-                }
-            }
-            .store(in: &cancellables)
+        #expect(!viewModel.isLoggedIn)
         
         viewModel.login()
         
-        wait(for: [expectation], timeout: 2.0)
-        XCTAssertTrue(viewModel.isLoggedIn)
+        // Wait for change since login is async and updates on MainActor
+        try await Task.sleep(nanoseconds: 200_000_000)
+        
+        #expect(viewModel.isLoggedIn)
     }
 }
 

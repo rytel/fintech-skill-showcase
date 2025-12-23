@@ -1,9 +1,11 @@
 import Foundation
 import Combine
 
+
 protocol AuthServiceProtocol {
     func login(credentials: LoginRequest) -> AnyPublisher<LoginResponse, Error>
 }
+
 
 final class AuthService: AuthServiceProtocol {
     private let apiService: APIServiceProtocol
@@ -13,13 +15,11 @@ final class AuthService: AuthServiceProtocol {
     }
     
     func login(credentials: LoginRequest) -> AnyPublisher<LoginResponse, Error> {
-        return Future { [weak self] promise in
+        let apiService = self.apiService
+        return Future { promise in
             Task {
                 do {
-                    guard let response = try await self?.apiService.login(username: credentials.username, password: credentials.password) else {
-                        promise(.failure(APIError.unknown))
-                        return
-                    }
+                    let response = try await apiService.login(username: credentials.username, password: credentials.password)
                     promise(.success(response))
                 } catch {
                     promise(.failure(error))

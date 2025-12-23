@@ -1,15 +1,17 @@
-import XCTest
+import Testing
 @testable import demoBank
 
-final class ViewModelFactoryTests: XCTestCase {
+
+@MainActor
+struct ViewModelFactoryTests {
     
-    func testViewModelFactoryCreatesLoginViewModel() {
+    @Test func viewModelFactoryCreatesLoginViewModel() {
         let container = DependencyContainer.shared
         // Rejestrujemy APIService, który jest wymagany przez LoginViewModel (w przyszłości)
         container.register(type: APIService.self, component: APIService())
         
         let factory = ViewModelFactory(container: container)
-        // Na razie testujemy czy factory w ogóle istnieje i zwraca coś
-        XCTAssertNotNil(factory)
+        // Na razie testujemy czy factory w ogóle istnieje (przez sam fakt, że init się udał)
+        #expect(true)
     }
 }

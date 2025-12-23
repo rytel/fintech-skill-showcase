@@ -14,7 +14,7 @@ final class TransactionListViewModel: ObservableObject {
         self.apiService = apiService
     }
     
-    @MainActor
+    
     func fetchTransactions(userId: String) async {
         isLoading = true
         errorMessage = nil

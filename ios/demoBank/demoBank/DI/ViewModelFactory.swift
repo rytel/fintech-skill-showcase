@@ -1,6 +1,7 @@
 import Foundation
 
 /// Fabryka odpowiedzialna za tworzenie ViewModels z wstrzykniętymi zależnościami.
+
 final class ViewModelFactory {
     private let container: DependencyContainer
     

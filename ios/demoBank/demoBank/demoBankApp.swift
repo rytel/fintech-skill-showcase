@@ -11,6 +11,10 @@ import SwiftUI
 struct demoBankApp: App {
     @StateObject private var appCoordinator = AppCoordinator()
     
+    init() {
+        DependencyContainer.shared.setupMocks()
+    }
+    
     var body: some Scene {
         WindowGroup {
             appCoordinator.rootView

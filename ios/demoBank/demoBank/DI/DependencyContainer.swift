@@ -1,6 +1,7 @@
 import Foundation
 
 /// Prosty kontener Dependency Injection zarządzający czasem życia serwisów.
+
 final class DependencyContainer {
     static let shared = DependencyContainer()
     
@@ -18,5 +19,12 @@ final class DependencyContainer {
     func resolve<T>(type: T.Type) -> T? {
         let key = String(describing: type)
         return services[key] as? T
+    }
+
+    func setupMocks() {
+        if ProcessInfo.processInfo.arguments.contains("-useMockData") {
+            register(type: AuthServiceProtocol.self, component: MockAuthService())
+            register(type: APIServiceProtocol.self, component: MockAPIService())
+        }
     }
 }

@@ -1,0 +1,29 @@
+---
+format_version: '11'
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+project_type: ios
+trigger_map:
+- pull_request_target_branch: main
+  workflow: primary
+workflows:
+  primary:
+    description: Build and test iOS app using Mock Data
+    meta:
+      bitrise.io:
+        stack: osx-xcode-16.0.x
+    steps:
+    - activate-ssh-key@4: {}
+    - git-clone@6: {}
+    - xcode-test@5:
+        title: Run iOS Tests (Unit + UI with Mocks)
+        inputs:
+        - project_path: ios/demoBank/demoBank.xcodeproj
+        - scheme: demoBank
+        - destination: platform=iOS Simulator,name=iPhone 16 Pro,OS=latest
+    - deploy-to-bitrise-io@2:
+        inputs:
+        - notify_user_groups: none
+app:
+  envs:
+  - BITRISE_PROJECT_PATH: ios/demoBank/demoBank.xcodeproj
+  - BITRISE_SCHEME: demoBank

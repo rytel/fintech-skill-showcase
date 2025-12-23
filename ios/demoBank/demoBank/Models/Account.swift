@@ -8,7 +8,7 @@ import Foundation
 struct Account: Codable {
     let id: String
     let userId: String
-    let balance: Double
+    var balance: Double
     let createdAt: Date
     
     enum CodingKeys: String, CodingKey {

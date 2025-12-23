@@ -60,7 +60,7 @@ final class TransferViewModel: ObservableObject {
         }
     }
     
-    @MainActor
+    
     private func performTransfer() {
         isLoading = true
         errorMessage = nil
