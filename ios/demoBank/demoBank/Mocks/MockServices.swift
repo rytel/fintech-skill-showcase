@@ -11,9 +11,9 @@ final class MockData {
     )
     
     static let transactions = [
-        Transaction(id: "1", accountId: "acc1", type: .deposit, amount: 2000.0, createdAt: Date().addingTimeInterval(-86400)),
-        Transaction(id: "2", accountId: "acc1", type: .withdraw, amount: 150.0, createdAt: Date().addingTimeInterval(-43200)),
-        Transaction(id: "3", accountId: "acc1", type: .deposit, amount: 500.0, createdAt: Date().addingTimeInterval(-3600))
+        Transaction(id: "1", accountId: "acc1", type: .deposit, amount: 2000.0, createdAt: Date().addingTimeInterval(-86400), description: nil),
+        Transaction(id: "2", accountId: "acc1", type: .withdrawal, amount: 150.0, createdAt: Date().addingTimeInterval(-43200), description: nil),
+        Transaction(id: "3", accountId: "acc1", type: .deposit, amount: 500.0, createdAt: Date().addingTimeInterval(-3600), description: nil)
     ]
 }
 
@@ -58,7 +58,7 @@ final class MockAPIService: APIServiceProtocol {
     func performTransaction(userId: String, type: TransactionType, amount: Double) async throws -> Account {
         try await simulateNetworkDelay()
         var newAccount = MockData.account
-        if type == .withdraw {
+        if type == .withdrawal {
             newAccount.balance -= amount
         } else {
             newAccount.balance += amount

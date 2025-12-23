@@ -1,19 +1,18 @@
-import XCTest
+import Testing
 import Foundation
 @testable import demoBank
 
-final class DashboardViewModelTests: XCTestCase {
+struct DashboardViewModelTests {
     
-    @MainActor
-    func testFetchAccountUpdatesState() async {
+    @Test @MainActor func fetchAccountUpdatesState() async {
         let mockAPI = MockAPIServiceForDashboard()
         let viewModel = DashboardViewModel(apiService: mockAPI)
         
         await viewModel.fetchData()
         
-        XCTAssertNotNil(viewModel.account)
-        XCTAssertEqual(viewModel.account?.balance, 1234.56)
-        XCTAssertFalse(viewModel.isLoading)
+        #expect(viewModel.account != nil)
+        #expect(viewModel.account?.balance == 1234.56)
+        #expect(!viewModel.isLoading)
     }
 }
 

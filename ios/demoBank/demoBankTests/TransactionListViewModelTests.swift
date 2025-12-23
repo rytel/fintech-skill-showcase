@@ -1,31 +1,30 @@
-import XCTest
+import Testing
+import Foundation
 @testable import demoBank
 
-final class TransactionListViewModelTests: XCTestCase {
+struct TransactionListViewModelTests {
     
-    @MainActor
-    func testFetchTransactionsUpdatesState() async {
+    @Test @MainActor func fetchTransactionsUpdatesState() async {
         let mockAPI = MockAPIServiceForTransactions()
         let viewModel = TransactionListViewModel(apiService: mockAPI)
         
         await viewModel.fetchTransactions(userId: "de305d54-75b4-431b-adb2-eb6b9e546014")
         
-        XCTAssertEqual(viewModel.transactions.count, 2)
-        XCTAssertEqual(viewModel.transactions.first?.amount, 100.0)
-        XCTAssertFalse(viewModel.isLoading)
+        #expect(viewModel.transactions.count == 2)
+        #expect(viewModel.transactions.first?.amount == 100.0)
+        #expect(!viewModel.isLoading)
     }
 
-    @MainActor
-    func testFetchTransactionsHandlesError() async {
+    @Test @MainActor func fetchTransactionsHandlesError() async {
         let mockAPI = MockAPIServiceForTransactions()
         mockAPI.shouldReturnError = true
         let viewModel = TransactionListViewModel(apiService: mockAPI)
         
         await viewModel.fetchTransactions(userId: "123")
         
-        XCTAssertTrue(viewModel.transactions.isEmpty)
-        XCTAssertNotNil(viewModel.errorMessage)
-        XCTAssertFalse(viewModel.isLoading)
+        #expect(viewModel.transactions.isEmpty)
+        #expect(viewModel.errorMessage != nil)
+        #expect(!viewModel.isLoading)
     }
 }
 

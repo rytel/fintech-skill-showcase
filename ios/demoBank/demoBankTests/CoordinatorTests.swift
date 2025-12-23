@@ -1,13 +1,13 @@
-import XCTest
+import Testing
 @testable import demoBank
 
-final class CoordinatorTests: XCTestCase {
+struct CoordinatorTests {
     
-    func testCoordinatorProtocolExists() {
+    @Test func coordinatorProtocolExists() {
         // Ten test ma na celu sprawdzenie, czy protokół Coordinator jest zdefiniowany
-        // i czy AppCoordinator go implementuje.
+        // i czy MockCoordinator go implementuje.
         let mockCoordinator = MockCoordinator()
-        XCTAssertNotNil(mockCoordinator)
+        #expect(mockCoordinator != nil)
     }
 }
 

@@ -1,4 +1,4 @@
-format_version: "13"
+format_version: "11"
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 
 project_type: ios
@@ -14,7 +14,9 @@ trigger_map:
 workflows:
   primary:
     description: "Build and test iOS app using Mock Data"
-    stack: osx-xcode-16.0.x
+    meta:
+      bitrise.io:
+        stack: osx-xcode-16.0.x
     steps:
     - activate-ssh-key@4: {}
     - git-clone@6: {}

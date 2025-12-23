@@ -1,16 +1,17 @@
-import XCTest
+import Testing
+import Foundation
 @testable import demoBank
 
-final class DITests: XCTestCase {
+struct DITests {
     
-    func testDependencyContainerRegistersAndResolvesService() {
+    @Test func dependencyContainerRegistersAndResolvesService() {
         let container = DependencyContainer.shared
         let mockService = MockAPIService()
         
         container.register(type: APIServiceProtocol.self, component: mockService)
         
         let resolvedService = container.resolve(type: APIServiceProtocol.self)
-        XCTAssertTrue(resolvedService is MockAPIService)
+        #expect(resolvedService is MockAPIService)
     }
 }
 
