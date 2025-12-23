@@ -23,8 +23,7 @@ workflows:
     project_type: other
     stack: linux-docker-android-22.04 # Standard Linux stack with Docker
     steps:
-    - activate-ssh-key@4:
-        run_if: '{{setup_ssh_key_variable_name | json | ne ""}}'
+    - activate-ssh-key@4: {}
     - git-clone@6: {}
     - script@1:
         title: Run Backend Tests
@@ -39,8 +38,7 @@ workflows:
     description: "Build and test iOS app with backend running in background"
     stack: osx-xcode-16.0.x # macOS stack for Xcode 16
     steps:
-    - activate-ssh-key@4:
-        run_if: '{{setup_ssh_key_variable_name | json | ne ""}}'
+    - activate-ssh-key@4: {}
     - git-clone@6: {}
     - script@1:
         title: Setup Environment and Run Backend
