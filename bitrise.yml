@@ -13,8 +13,8 @@ workflows:
         stack: osx-xcode-16.0.x
     steps:
     - activate-ssh-key@4: {}
-    - git-clone@6: {}
-    - xcode-test@5:
+    - git-clone@8: {}
+    - xcode-test:
         title: Run iOS Tests (Unit + UI with Mocks)
         inputs:
         - project_path: ios/demoBank/demoBank.xcodeproj
