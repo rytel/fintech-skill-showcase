@@ -4,7 +4,7 @@
 //
 
 import Foundation
-
+import OSLog
 
 final class APIService: APIServiceProtocol {
     private let session: URLSession
@@ -22,6 +22,7 @@ final class APIService: APIServiceProtocol {
         requiresAuth: Bool = true
     ) async throws -> T {
         guard let url = URL(string: path, relativeTo: baseURL) else {
+            Logger.network.error("❌ Invalid URL: \(path)")
             throw APIError.invalidURL
         }
         
@@ -32,21 +33,40 @@ final class APIService: APIServiceProtocol {
         if requiresAuth {
             if let token = KeychainHelper.shared.getToken() {
                 request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            } else {
+                Logger.network.warning("⚠️ Request to \(path) requires auth but no token found")
             }
         }
         
         request.httpBody = body
         
+        // Log Request
+        Logger.network.info("➡️ \(method) \(path)")
+        #if DEBUG
+        if let body = body, let bodyString = String(data: body, encoding: .utf8) {
+            Logger.network.debug("➡️ Body: \(bodyString)")
+        }
+        #endif
+        
         let (data, response) = try await session.data(for: request)
         
-        // Debug: Print raw response
-        if let jsonString = String(data: data, encoding: .utf8) {
-            print("API Response for \(path): \(jsonString)")
-        }
-        
         guard let httpResponse = response as? HTTPURLResponse else {
+            Logger.network.error("❌ Invalid response type (not HTTP)")
             throw APIError.unknown
         }
+        
+        // Log Response Status
+        if (200...299).contains(httpResponse.statusCode) {
+            Logger.network.info("✅ \(httpResponse.statusCode) \(path)")
+        } else {
+            Logger.network.error("❌ \(httpResponse.statusCode) \(path)")
+        }
+
+        #if DEBUG
+        if let jsonString = String(data: data, encoding: .utf8) {
+            Logger.network.debug("⬅️ Response: \(jsonString)")
+        }
+        #endif
         
         guard (200...299).contains(httpResponse.statusCode) else {
             if httpResponse.statusCode == 401 {
@@ -86,6 +106,7 @@ final class APIService: APIServiceProtocol {
             })
             return try decoder.decode(T.self, from: data)
         } catch {
+            Logger.network.error("❌ Decoding Error for \(path): \(error.localizedDescription)")
             throw APIError.decodingError(error.localizedDescription)
         }
     }
