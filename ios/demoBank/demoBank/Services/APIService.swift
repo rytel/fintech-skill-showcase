@@ -44,7 +44,8 @@ final class APIService: APIServiceProtocol {
         Logger.network.info("➡️ \(method) \(path)")
         #if DEBUG
         if let body = body, let bodyString = String(data: body, encoding: .utf8) {
-            Logger.network.debug("➡️ Body: \(bodyString)")
+            let redactedBody = self.redactSensitiveInfo(from: bodyString)
+            Logger.network.debug("➡️ Body: \(redactedBody)")
         }
         #endif
         
@@ -136,5 +137,25 @@ final class APIService: APIServiceProtocol {
         ]
         let body = try JSONSerialization.data(withJSONObject: requestBody)
         return try await performRequest(path: "/api/transactions", method: "POST", body: body)
+    }
+    
+    private func redactSensitiveInfo(from jsonString: String) -> String {
+        let sensitiveKeys = ["password", "token", "access_token", "secret"]
+        var redacted = jsonString
+        
+        for key in sensitiveKeys {
+            // Regex to find "key": "value" patterns and replace value with "***"
+            // Handles potential whitespace around colon
+            let pattern = "\"\(key)\"\\s*:\\s*\"([^\"]+)\""
+            if let regex = try? NSRegularExpression(pattern: pattern, options: .caseInsensitive) {
+                redacted = regex.stringByReplacingMatches(
+                    in: redacted,
+                    options: [],
+                    range: NSRange(location: 0, length: redacted.utf16.count),
+                    withTemplate: "\"\(key)\": \"***REDACTED***\""
+                )
+            }
+        }
+        return redacted
     }
 }
