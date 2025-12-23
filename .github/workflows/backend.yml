@@ -20,11 +20,6 @@ jobs:
       run:
         working-directory: backend
 
-    services:
-      # We could use services here, but the Makefile uses docker-compose 
-      # which handles multiple containers and network setup. 
-      # GitHub Actions ubuntu-latest includes docker and docker-compose.
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
