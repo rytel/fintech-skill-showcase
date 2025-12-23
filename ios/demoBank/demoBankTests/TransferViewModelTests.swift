@@ -2,6 +2,7 @@ import Testing
 import Foundation
 @testable import demoBank
 
+@MainActor
 struct TransferViewModelTests {
     
     private var mockAPI: MockAPIService
@@ -42,7 +43,7 @@ struct TransferViewModelTests {
         #expect(viewModel.currentStep == .confirmation)
     }
     
-    @Test @MainActor func toastNotification() async throws {
+    @Test func toastNotification() async throws {
         viewModel.recipientName = "Jan"
         viewModel.recipientAccount = "1234567890"
         viewModel.amount = "50"

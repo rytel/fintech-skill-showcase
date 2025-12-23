@@ -5,7 +5,7 @@
 
 import Foundation
 
-struct Account: Codable {
+struct Account: Codable, Sendable {
     let id: String
     let userId: String
     var balance: Double

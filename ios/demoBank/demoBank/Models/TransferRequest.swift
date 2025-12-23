@@ -1,6 +1,6 @@
 import Foundation
 
-struct TransferRequest: Codable {
+struct TransferRequest: Codable, Sendable {
     let recipientName: String
     let recipientAccount: String
     let amount: Double

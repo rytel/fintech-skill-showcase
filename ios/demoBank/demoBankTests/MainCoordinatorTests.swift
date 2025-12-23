@@ -1,6 +1,7 @@
 import Testing
 @testable import demoBank
 
+@MainActor
 struct MainCoordinatorTests {
     
     @Test func mainCoordinatorInitializesWithChildCoordinators() {

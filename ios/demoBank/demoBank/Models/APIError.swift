@@ -5,7 +5,7 @@
 
 import Foundation
 
-enum APIError: Error, LocalizedError, Equatable {
+enum APIError: Error, LocalizedError, Equatable, Sendable {
     case invalidURL
     case networkError(String)
     case serverError(Int)

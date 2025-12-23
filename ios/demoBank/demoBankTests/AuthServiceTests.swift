@@ -3,6 +3,7 @@ import Combine
 import Foundation
 @testable import demoBank
 
+@MainActor
 struct AuthServiceTests {
     
     @Test func loginReturnsSuccess() async throws {
@@ -10,13 +11,29 @@ struct AuthServiceTests {
         let service = AuthService(apiService: mockAPI)
         let request = LoginRequest(username: "test", password: "password")
         
-        // Using AsyncPublisher to test Combine stream in a modern way
-        let response = try await service.login(credentials: request).values.first(where: { _ in true })
+        let publisher = service.login(credentials: request)
         
-        #expect(response?.token == "mock-token")
+        // Manual continuation to avoid AsyncPublisher sendability issues in tests
+        let response: LoginResponse = try await withCheckedThrowingContinuation { continuation in
+            var cancellable: AnyCancellable?
+            cancellable = publisher.first().sink(
+                receiveCompletion: { completion in
+                    if case .failure(let error) = completion {
+                        continuation.resume(throwing: error)
+                    }
+                    _ = cancellable
+                },
+                receiveValue: { value in
+                    continuation.resume(returning: value)
+                }
+            )
+        }
+        
+        #expect(response.token == "mock-token")
     }
 }
 
+@MainActor
 class MockAPIServiceForAuth: APIServiceProtocol {
     func login(username: String, password: String) async throws -> LoginResponse {
         return LoginResponse(token: "mock-token")
