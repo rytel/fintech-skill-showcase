@@ -1,6 +1,7 @@
 import Foundation
 import Combine
 import LocalAuthentication
+import OSLog
 
 /// ViewModel dla widoku logowania.
 final class LoginViewModel: ObservableObject {
@@ -18,6 +19,7 @@ final class LoginViewModel: ObservableObject {
         self.authService = authService
         
         if ProcessInfo.processInfo.arguments.contains("-skipBiometrics") {
+            Logger.auth.info("Biometrics skipped via launch argument")
             self.canUseBiometrics = false
         } else {
             checkBiometrics()
@@ -28,17 +30,21 @@ final class LoginViewModel: ObservableObject {
         let context = LAContext()
         var error: NSError?
         canUseBiometrics = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
+        Logger.auth.debug("Biometrics availability checked: \(self.canUseBiometrics)")
     }
     
     func loginWithBiometrics() {
         let context = LAContext()
         let reason = "Log in to your bank account"
         
+        Logger.auth.info("Initiating biometric login")
         context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { [weak self] success, error in
             DispatchQueue.main.async {
                 if success {
+                    Logger.auth.info("Biometric login successful")
                     self?.isLoggedIn = true
                 } else if let error = error {
+                    Logger.auth.error("Biometric login failed: \(error.localizedDescription)")
                     self?.errorMessage = error.localizedDescription
                 }
             }
@@ -46,6 +52,7 @@ final class LoginViewModel: ObservableObject {
     }
     
     func login() {
+        Logger.auth.info("Attempting standard login for user: \(self.username, privacy: .private)")
         isLoading = true
         errorMessage = nil
         
@@ -56,9 +63,11 @@ final class LoginViewModel: ObservableObject {
             .sink { [weak self] completion in
                 self?.isLoading = false
                 if case .failure(let error) = completion {
+                    Logger.auth.error("Login failed: \(error.localizedDescription)")
                     self?.errorMessage = error.localizedDescription
                 }
             } receiveValue: { [weak self] response in
+                Logger.auth.info("Login successful, saving token")
                 KeychainHelper.shared.saveToken(response.token)
                 self?.isLoggedIn = true
             }

@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import OSLog
 
 final class TransferViewModel: ObservableObject {
     enum Step {
@@ -9,7 +10,11 @@ final class TransferViewModel: ObservableObject {
         case success
     }
     
-    @Published var currentStep: Step = .recipient
+    @Published var currentStep: Step = .recipient {
+        didSet {
+            Logger.ui.debug("Transfer step changed to: \(String(describing: self.currentStep))")
+        }
+    }
     @Published var recipientName: String = ""
     @Published var recipientAccount: String = ""
     @Published var amount: String = ""
@@ -62,12 +67,14 @@ final class TransferViewModel: ObservableObject {
     
     
     private func performTransfer() {
+        Logger.ui.info("Initiating transfer of \(self.amount) to \(self.recipientName, privacy: .private)")
         isLoading = true
         errorMessage = nil
         
         guard let amountDouble = Double(amount.replacingOccurrences(of: ",", with: ".")) else {
             self.errorMessage = "Nieprawidłowa kwota"
             self.isLoading = false
+            Logger.ui.warning("Transfer failed: Invalid amount entered")
             return
         }
         
@@ -80,6 +87,7 @@ final class TransferViewModel: ObservableObject {
                     amount: amountDouble
                 )
                 
+                Logger.ui.info("Transfer completed successfully")
                 self.isLoading = false
                 self.toastType = .success
                 self.toastMessage = "Przelew do \(self.recipientName) został wysłany!"
@@ -92,6 +100,7 @@ final class TransferViewModel: ObservableObject {
                     self.showToast = false
                 }
             } catch {
+                Logger.ui.error("Transfer failed: \(error.localizedDescription)")
                 self.isLoading = false
                 self.errorMessage = error.localizedDescription
                 self.toastType = .error
