@@ -23,6 +23,7 @@ struct LoginView: View {
                 TextField("Enter username", text: $viewModel.username)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .autocapitalization(.none)
+                    .accessibilityIdentifier("username_field")
             }
             .padding(.horizontal)
             
@@ -32,6 +33,7 @@ struct LoginView: View {
                     .foregroundColor(.secondary)
                 SecureField("Enter password", text: $viewModel.password)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .accessibilityIdentifier("password_field")
             }
             .padding(.horizontal)
             
@@ -39,6 +41,7 @@ struct LoginView: View {
                 Text(error)
                     .foregroundColor(.red)
                     .font(.caption)
+                    .accessibilityIdentifier("error_message")
             }
             
             Button(action: {
@@ -59,6 +62,7 @@ struct LoginView: View {
             .cornerRadius(10)
             .padding(.horizontal)
             .disabled(viewModel.isLoading || viewModel.username.isEmpty || viewModel.password.isEmpty)
+            .accessibilityIdentifier("login_button")
             
             if viewModel.canUseBiometrics {
                 Button(action: {
@@ -71,6 +75,7 @@ struct LoginView: View {
                     .foregroundColor(.blue)
                 }
                 .padding(.top, 10)
+                .accessibilityIdentifier("biometric_button")
             }
             
             Spacer()

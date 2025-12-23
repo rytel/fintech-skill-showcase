@@ -16,7 +16,12 @@ final class LoginViewModel: ObservableObject {
     
     init(authService: AuthServiceProtocol) {
         self.authService = authService
-        checkBiometrics()
+        
+        if ProcessInfo.processInfo.arguments.contains("-skipBiometrics") {
+            self.canUseBiometrics = false
+        } else {
+            checkBiometrics()
+        }
     }
     
     func checkBiometrics() {

@@ -32,6 +32,7 @@ struct TransferFormView: View {
                                 }
                             }
                             .buttonStyle(.bordered)
+                            .accessibilityIdentifier("transfer_back_button")
                         }
                         
                         Button(action: {
@@ -52,6 +53,7 @@ struct TransferFormView: View {
                         .foregroundColor(.white)
                         .cornerRadius(12)
                         .disabled(isNextDisabled || viewModel.isLoading)
+                        .accessibilityIdentifier("transfer_next_button")
                     }
                     .padding()
                 }
@@ -62,6 +64,7 @@ struct TransferFormView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     if viewModel.currentStep == .success {
                         Button("Zamknij") { dismiss() }
+                            .accessibilityIdentifier("transfer_close_button")
                     }
                 }
             }
@@ -71,6 +74,7 @@ struct TransferFormView: View {
                         .transition(.move(edge: .top).combined(with: .opacity))
                         .padding(.top, 10)
                         .zIndex(1)
+                        .accessibilityIdentifier("toast_view")
                 }
             }
             .animation(.spring(), value: viewModel.showToast)
@@ -101,6 +105,7 @@ struct TransferFormView: View {
                     .padding()
                     .background(Color(.secondarySystemBackground))
                     .cornerRadius(10)
+                    .accessibilityIdentifier("recipient_name_field")
             }
             
             VStack(alignment: .leading, spacing: 8) {
@@ -112,6 +117,7 @@ struct TransferFormView: View {
                     .padding()
                     .background(Color(.secondarySystemBackground))
                     .cornerRadius(10)
+                    .accessibilityIdentifier("recipient_account_field")
             }
         }
         .padding(.horizontal)
@@ -127,6 +133,7 @@ struct TransferFormView: View {
                     TextField("0,00", text: $viewModel.amount)
                         .font(.system(size: 24, weight: .bold, design: .rounded))
                         .keyboardType(.decimalPad)
+                        .accessibilityIdentifier("transfer_amount_field")
                     Text("PLN")
                         .fontWeight(.bold)
                 }
@@ -143,6 +150,7 @@ struct TransferFormView: View {
                     .padding()
                     .background(Color(.secondarySystemBackground))
                     .cornerRadius(10)
+                    .accessibilityIdentifier("transfer_title_field")
             }
         }
         .padding(.horizontal)
@@ -161,6 +169,7 @@ struct TransferFormView: View {
         .background(Color(.secondarySystemBackground))
         .cornerRadius(12)
         .padding(.horizontal)
+        .accessibilityIdentifier("transfer_confirmation_view")
     }
     
     private var successStep: some View {
@@ -168,6 +177,7 @@ struct TransferFormView: View {
             Image(systemName: "checkmark.circle.fill")
                 .font(.system(size: 80))
                 .foregroundColor(.green)
+                .accessibilityIdentifier("transfer_success_icon")
             
             Text("Przelew wysłany!")
                 .font(.title2)
@@ -183,6 +193,7 @@ struct TransferFormView: View {
             }
             .padding()
             .buttonStyle(.borderedProminent)
+            .accessibilityIdentifier("back_to_dashboard_button")
         }
     }
     
@@ -230,18 +241,4 @@ struct StepCircle: View {
                 .foregroundColor(step <= currentStep ? .primary : .secondary)
         }
     }
-}
-
-#Preview {
-    class PreviewAPI: APIServiceProtocol {
-        func login(username: String, password: String) async throws -> LoginResponse { return LoginResponse(token: "") }
-        func fetchAccount(userId: String) async throws -> Account { 
-            return Account(id: "1", userId: "1", balance: 0, createdAt: Date())
-        }
-        func fetchTransactions(userId: String) async throws -> [Transaction] { return [] }
-        func performTransaction(userId: String, type: TransactionType, amount: Double) async throws -> Account {
-            return try await fetchAccount(userId: userId)
-        }
-    }
-    return TransferFormView(viewModel: TransferViewModel(apiService: PreviewAPI()))
 }

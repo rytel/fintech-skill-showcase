@@ -16,6 +16,7 @@ struct AccountCard: View {
             
             Text(formatBalance(account.balance))
                 .font(.system(size: 34, weight: .bold, design: .rounded))
+                .accessibilityIdentifier("account_balance_text")
             
             HStack {
                 Text("Konto osobiste")
@@ -36,6 +37,7 @@ struct AccountCard: View {
         .background(Color(.secondarySystemBackground))
         .cornerRadius(16)
         .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+        .accessibilityIdentifier("account_card")
     }
     
     private func formatBalance(_ amount: Double) -> String {
@@ -44,9 +46,4 @@ struct AccountCard: View {
         formatter.currencyCode = "PLN" // W realnej aplikacji bralibyśmy z modelu account.currency
         return formatter.string(from: NSNumber(value: amount)) ?? "\(amount) PLN"
     }
-}
-
-#Preview {
-    AccountCard(account: Account(id: "de305d54-75b4-431b-adb2-eb6b9e546014", userId: "1", balance: 12500.50, createdAt: Date()))
-        .padding()
 }

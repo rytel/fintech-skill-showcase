@@ -39,6 +39,17 @@
                ReferencedContainer = "container:demoBank.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "B0347D372EFADD310047977C"
+               BuildableName = "demoBankUITests.xctest"
+               BlueprintName = "demoBankUITests"
+               ReferencedContainer = "container:demoBank.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

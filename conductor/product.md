@@ -21,5 +21,5 @@ A professional, high-integrity banking system consisting of a Go backend and a n
 
 ## Current Architecture
 - **Account Service:** A dedicated microservice managing customer accounts, multi-currency balances, and atomic balance updates with strict ACID compliance.
-- **iOS Application (Foundation):** A native Swift application with a dedicated data layer (Models), secure storage (Keychain), and a robust networking layer (TDD-verified).
+- **iOS Application (Foundation):** A native Swift application with a dedicated data layer (Models), secure storage (Keychain), a robust networking layer (TDD-verified), and automated UI test coverage (XCUITest).
 - **Target Microservices:** Future extraction of Auth Service, Transaction Service, and FX Service into independent units.

@@ -41,7 +41,7 @@
 
 ## Testing & Quality
 - **Unit Testing:** Go Standard Library (`testing`), `sqlmock`, and `testify` (assert/mock)
-- **iOS Testing:** Swift Testing
-    - *Rationale:* The new, modern testing framework from Apple for Swift applications.
+- **iOS Testing:** Swift Testing & XCUITest
+    - *Rationale:* Swift Testing for logic/models and XCUITest for verifying end-to-end user journeys.
 - **Integration Testing:** Dockerized environment for end-to-end flow validation.
 - **API Documentation:** OpenAPI 3.0 (Swagger)
