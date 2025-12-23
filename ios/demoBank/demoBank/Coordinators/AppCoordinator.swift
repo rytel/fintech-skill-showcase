@@ -15,7 +15,13 @@ final class AppCoordinator: Coordinator, ObservableObject {
     }
     
     func start() {
-        showLogin()
+        if ProcessInfo.processInfo.arguments.contains("-skipLogin") {
+            // Mock authentication for development
+            KeychainHelper.shared.saveToken("dev-token")
+            showMain()
+        } else {
+            showLogin()
+        }
     }
     
     func showLogin() {

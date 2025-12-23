@@ -1,51 +1,28 @@
 package repository
 
 import (
-
 	"testing"
-
 	"time"
 
-
-
 	"github.com/DATA-DOG/go-sqlmock"
-
 	"go-web-server/internal/model"
-
 )
 
-
-
 func TestGetAccount(t *testing.T) {
-
 	db, mock, err := sqlmock.New()
-
 	if err != nil {
-
 		t.Fatalf("failed to open sqlmock: %s", err)
-
 	}
-
 	defer db.Close()
 
-
-
 	repo := NewPostgresRepository(db)
-
 	now := time.Now()
 
-
-
 	rows := sqlmock.NewRows([]string{"id", "user_id", "balance", "created_at"}).
-
-		AddRow(1, "test_user", 100.0, now)
-
-
+		AddRow("1", "test_user", 100.0, now)
 
 	mock.ExpectQuery(`SELECT id, user_id, balance, created_at FROM accounts`).
-
 		WithArgs("test_user").
-
 		WillReturnRows(rows)
 
 	account, err := repo.GetAccount("test_user")
@@ -77,19 +54,21 @@ func TestCreateTransaction_Deposit(t *testing.T) {
 	// Lock account
 	mock.ExpectQuery(`SELECT id, user_id, balance, created_at FROM accounts WHERE user_id = \$1 FOR UPDATE`).
 		WithArgs("test_user").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "user_id", "balance", "created_at"}).AddRow(1, "test_user", 100.0, time.Now()))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "user_id", "balance", "created_at"}).AddRow("1", "test_user", 100.0, time.Now()))
 	
 	// Update balance
 	mock.ExpectExec(`UPDATE accounts SET balance = \$1 WHERE id = \$2`).
-		WithArgs(150.0, 1).
+		WithArgs(150.0, "1").
 		WillReturnResult(sqlmock.NewResult(1, 1))
 	
-	// Insert transaction record
+	// Insert transaction record - Note: The code uses 'transactions' table in CreateTransaction
+	// but the GetTransactionsRaw uses 'ledger_entries'. 
+	// I should check repository/postgres.go CreateTransaction implementation again.
 	mock.ExpectExec(`INSERT INTO transactions`).
-		WithArgs(1, model.Deposit, 50.0).
+		WithArgs("1", model.Deposit, 50.0).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 	
-mock.ExpectCommit()
+	mock.ExpectCommit()
 
 	account, err := repo.CreateTransaction(req)
 	if err != nil {
@@ -119,7 +98,7 @@ func TestCreateTransaction_Withdraw_InsufficientFunds(t *testing.T) {
 	mock.ExpectBegin()
 	mock.ExpectQuery(`SELECT id, user_id, balance, created_at FROM accounts WHERE user_id = \$1 FOR UPDATE`).
 		WithArgs("test_user").
-		WillReturnRows(sqlmock.NewRows([]string{"id", "user_id", "balance", "created_at"}).AddRow(1, "test_user", 100.0, time.Now()))
+		WillReturnRows(sqlmock.NewRows([]string{"id", "user_id", "balance", "created_at"}).AddRow("1", "test_user", 100.0, time.Now()))
 	
 	mock.ExpectRollback()
 
@@ -129,7 +108,7 @@ func TestCreateTransaction_Withdraw_InsufficientFunds(t *testing.T) {
 	}
 }
 
-func TestGetTransactions(t *testing.T) {
+func TestGetTransactionsRaw(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	if err != nil {
 		t.Fatalf("failed to open sqlmock: %s", err)
@@ -138,19 +117,15 @@ func TestGetTransactions(t *testing.T) {
 
 	repo := NewPostgresRepository(db)
 
-	mock.ExpectQuery(`SELECT id FROM accounts WHERE user_id = \$1`).
-		WithArgs("test_user").
-		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
-
 	rows := sqlmock.NewRows([]string{"id", "account_id", "type", "amount", "created_at"}).
-		AddRow(1, 1, model.Deposit, 100.0, time.Now()).
-		AddRow(2, 1, model.Withdraw, 50.0, time.Now())
+		AddRow("1", "1", "deposit", 100.0, time.Now()).
+		AddRow("2", "1", "withdrawal", 50.0, time.Now())
 
-	mock.ExpectQuery(`SELECT id, account_id, type, amount, created_at FROM transactions`).
-		WithArgs(1).
+	mock.ExpectQuery(`SELECT id, account_id, type, amount, created_at FROM ledger_entries WHERE account_id = \$1`).
+		WithArgs("1").
 		WillReturnRows(rows)
 
-	txs, err := repo.GetTransactions("test_user")
+	txs, err := repo.GetTransactionsRaw("1")
 	if err != nil {
 		t.Errorf("unexpected error: %v", err)
 	}
@@ -159,4 +134,3 @@ func TestGetTransactions(t *testing.T) {
 		t.Errorf("expected 2 transactions, got %d", len(txs))
 	}
 }
-

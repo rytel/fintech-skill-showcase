@@ -46,6 +46,7 @@ struct DashboardView: View {
                     HStack(spacing: 15) {
                         Button(action: { onTransferTap?() }) {
                             QuickActionButton(title: "Przelew", icon: "arrow.up.right.circle.fill", color: .blue)
+                                .accessibilityIdentifier("quick_action_transfer")
                         }
                         .buttonStyle(.plain)
                         
@@ -58,6 +59,8 @@ struct DashboardView: View {
                 .padding()
             }
             .navigationTitle("Moje Finanse")
+            .accessibilityIdentifier("dashboard_title_text")
+            .accessibilityIdentifier("dashboard_nav_bar")
             .refreshable {
                 await viewModel.fetchData()
             }

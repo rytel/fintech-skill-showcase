@@ -54,7 +54,7 @@ struct DomainTests {
         let responseData =
         """
         {
-            "id": 1,
+            "id": "de305d54-75b4-431b-adb2-eb6b9e546014",
             "user_id": "test_user",
             "balance": 1000.0,
             "created_at": "2023-01-01T12:00:00Z"

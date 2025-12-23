@@ -1,65 +1,96 @@
-# Fintech Skill Showcase - Go Backend
+# Fintech Skill Showcase
 
-Profesjonalny serwer backendowy napisany w Go, demonstrujący architekturę systemów finansowych, obsługę transakcji ACID oraz nowoczesny layout projektu.
+A complete Fullstack banking system demonstrating advanced engineering skills in building a secure financial backend and a modern iOS mobile application.
 
-## 🚀 Architektura i Struktura Projektu
+The project consists of two main modules:
+- **Backend (`/backend`)**: A Go-based server ensuring ACID transactions and providing a REST API.
+- **iOS (`/ios`)**: A SwiftUI mobile application implementing the client interface.
 
-Projekt stosuje **Standard Go Project Layout**, zapewniający czystą separację obaw:
+---
 
-- `cmd/server/`: Punkt wejścia aplikacji (minimalny bootstrap).
-- `internal/app/`: Logika inicjalizacji i wstrzykiwania zależności (DI).
-- `internal/handler/`: Warstwa transportowa (HTTP/REST), obsługa żądań i odpowiedzi (niezależna od bazy danych).
-- `internal/repository/`: Warstwa dostępu do danych (PostgreSQL), implementacja logiki transakcyjnej (ACID, `FOR UPDATE`).
-- `internal/model/`: Definicje struktur danych i modeli domenowych.
-- `migrations/`: Skrypty SQL definiujące schemat bazy danych.
-- `tests/`: Testy integracyjne (End-to-End).
+## 🏗 Architecture
 
-## 🛠 Stos Technologiczny
+### 1. Backend (Go)
+A professional API server written in Go (1.23), implementing the bank's core business logic.
+- **Key Features**:
+    - **ACID Transactions**: Row-level locking (`SELECT ... FOR UPDATE`) to prevent race conditions during financial operations.
+    - **Architecture**: Clean Architecture / Hexagonal with full Dependency Injection.
+    - **Database**: PostgreSQL 15.
+    - **Security**: JWT Tokens (demonstration version), SQL migrations on startup.
 
-- **Język:** Go 1.23
-- **Baza danych:** PostgreSQL 15
-- **Konteneryzacja:** Docker & Docker Compose (Multi-stage build)
-- **Testowanie:** Go Testing Package + `sqlmock` dla testów jednostkowych
+### 2. iOS (SwiftUI)
+A modern client application written in Swift 5+.
+- **Key Features**:
+    - **UI**: SwiftUI.
+    - **Patterns**: MVVM + Coordinator (navigation) + Dependency Injection Container.
+    - **Networking**: Modern `async/await` with robust error handling.
+    - **Testing**: Unit Tests (XCTest) and UI Tests.
 
-## 📜 Standardy i Kontrakty
+---
 
-### Standardy Kodowania
-1.  **Dependency Injection**: Nie używamy zmiennych globalnych. Zależności są przekazywane przez konstruktory (np. `NewHandler`, `NewPostgresRepository`).
-2.  **Enkapsulacja**: Cała kluczowa logika biznesowa MUSI znajdować się w `internal/`, aby nie była dostępna dla zewnętrznych modułów.
-3.  **Bezpieczeństwo (Safety)**: Operacje na saldzie muszą być atomowe i wykonywane w ramach transakcji bazy danych.
-4.  **Testowanie**:
-    -   Testy jednostkowe z `sqlmock` dla repozytoriów.
-    -   Testy integracyjne w `tests/` wymagające uruchomionego środowiska (Docker Compose).
+## ⚙️ Setup Instructions (Local Development)
 
-### Kontrakt API
--   Wszystkie endpointy zwracają **JSON** z nagłówkiem `Content-Type: application/json`.
--   Błędy API są zwracane w czytelnym formacie z odpowiednimi kodami HTTP (400, 404, 500).
+To run the system locally, you will need:
+- Docker & Docker Compose
+- Xcode 15+ (for iOS)
+- Go 1.23+ (optional, for local backend development without Docker)
 
-## 🏁 Jak uruchomić?
-
-### Szybki start (Docker)
-Wymaga zainstalowanego Dockera i Docker Compose.
+### Step 1: Run the Backend
+The mobile application requires a running API. The backend must be started first.
 
 ```bash
-docker-compose up --build
+cd backend
+# Run in "detached" mode (background) to free up the terminal
+docker-compose up -d --build
 ```
-Serwer będzie dostępny pod adresem: `http://localhost:8080`
+The server will be available at `http://localhost:8080` after a few moments.
 
-### Uruchamianie Testów
+### Step 2: Run the iOS Application
+1. Open the project in Xcode:
+   ```bash
+   open ios/demoBank/demoBank.xcodeproj
+   ```
+2. Select a simulator (e.g., iPhone 16 Pro).
+3. Run the app using **Cmd+R**.
 
-**Testy jednostkowe (izolowane):**
+The app connects to `localhost:8080`. You can log in using the test credentials:
+- **Username:** `test_user`
+- **Password:** `password123`
+
+---
+
+## 🧪 Testing
+
+### Backend
+Backend tests are self-contained (Docker Compose handles the database for integration tests).
+
 ```bash
-go test ./internal/...
+cd backend
+make test
 ```
 
-**Testy integracyjne (wymagają bazy danych):**
-```bash
-docker-compose up -d
-go test -v ./tests/integration_test.go
-```
+### 📱 iOS (Important!)
+⚠️ **NOTE:** UI tests (`demoBankUITests`) perform real network requests and log into the system (Integration Tests).
 
-## 🔐 Kluczowe Funkcjonalności
+**For iOS UI tests to pass, the backend MUST be running in the background.** If the backend is not active, UI tests will fail due to connection errors.
 
-- **Transakcyjność ACID:** Wszystkie operacje finansowe (wpłaty/wypłaty) są wykonywane w ramach transakcji DB z blokowaniem wierszy (`FOR UPDATE`), co zapobiega wyścigom (race conditions).
-- **Automatyczne Migracje:** Serwer automatycznie inicjalizuje schemat bazy danych przy starcie.
-- **Integracja iOS:** Dedykowane endpointy i wsparcie dla testów UI (zobacz [IOS_API.md](IOS_API.md)).
+**Correct testing procedure:**
+
+1. **Ensure the backend is running:**
+   ```bash
+   cd backend && docker-compose up -d
+   ```
+
+2. **Run iOS tests:**
+   - **In Xcode:** Press **Cmd+U**.
+   - **In Terminal:**
+     ```bash
+     xcodebuild test -project ios/demoBank/demoBank.xcodeproj \
+     -scheme demoBank \
+     -destination 'platform=iOS Simulator,name=iPhone 16 Pro'
+     ```
+
+3. **(Optional) Clean up after testing:**
+   ```bash
+   cd backend && docker-compose down
+   ```

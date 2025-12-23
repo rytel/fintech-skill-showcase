@@ -10,6 +10,8 @@ final class KeychainHelper {
     static let shared = KeychainHelper()
     private init() {}
     
+    private var hasResetForUIInThisRun = false
+    
     func save(_ data: Data, service: String, account: String) {
         let query = [
             kSecValueData: data,
@@ -74,6 +76,13 @@ extension KeychainHelper {
     }
     
     func getToken() -> String? {
+        // Reset only ONCE per app launch if argument is present
+        if ProcessInfo.processInfo.arguments.contains("-resetKeychain") && !hasResetForUIInThisRun {
+            deleteToken()
+            hasResetForUIInThisRun = true
+            return nil
+        }
+        
         if let data = read(service: KeychainHelper.tokenService, account: KeychainHelper.tokenAccount) {
             return String(data: data, encoding: .utf8)
         }
