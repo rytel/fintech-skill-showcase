@@ -3,10 +3,6 @@ format_version: '11'
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 project_type: ios
 trigger_map:
-- push_branch: main
-  workflow: primary
-- push_branch: feature/*
-  workflow: primary
 - pull_request_target_branch: main
   workflow: primary
 workflows:
@@ -27,9 +23,6 @@ workflows:
     - deploy-to-bitrise-io@2:
         inputs:
         - notify_user_groups: none
-    triggers:
-      push:
-      - branch: "*"
 app:
   envs:
   - BITRISE_PROJECT_PATH: ios/demoBank/demoBank.xcodeproj
