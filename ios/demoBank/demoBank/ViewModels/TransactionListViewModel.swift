@@ -2,7 +2,7 @@ import Foundation
 import Combine
 
 /// ViewModel dla listy transakcji.
-final class TransactionListViewModel: ObservableObject {
+@MainActor final class TransactionListViewModel: ObservableObject {
     @Published var transactions: [Transaction] = []
     @Published var isLoading = false
     @Published var errorMessage: String?

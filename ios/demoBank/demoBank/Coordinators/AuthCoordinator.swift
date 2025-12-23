@@ -3,7 +3,7 @@ import SwiftUI
 import Combine
 
 /// Koordynator zarządzający procesem uwierzytelniania.
-final class AuthCoordinator: Coordinator, ObservableObject {
+@MainActor final class AuthCoordinator: Coordinator, ObservableObject {
     var childCoordinators: [Coordinator] = []
     
     /// Callback wywoływany po pomyślnym zalogowaniu.

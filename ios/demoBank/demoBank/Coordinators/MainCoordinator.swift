@@ -3,7 +3,7 @@ import SwiftUI
 import Combine
 
 /// Koordynator zarządzający głównym widokiem z zakładkami (Dashboard, Payments, Profile).
-final class MainCoordinator: Coordinator, ObservableObject {
+@MainActor final class MainCoordinator: Coordinator, ObservableObject {
     var childCoordinators: [Coordinator] = []
     let factory: ViewModelFactory
     

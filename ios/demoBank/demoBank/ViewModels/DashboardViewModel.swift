@@ -2,7 +2,7 @@ import Foundation
 import Combine
 
 /// ViewModel dla widoku podsumowania kont (Dashboard).
-final class DashboardViewModel: ObservableObject {
+@MainActor final class DashboardViewModel: ObservableObject {
     @Published var account: Account?
     @Published var isLoading = false
     @Published var errorMessage: String?

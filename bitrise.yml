@@ -1,8 +1,7 @@
-format_version: "11"
+---
+format_version: '11'
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
-
 project_type: ios
-
 trigger_map:
 - push_branch: main
   workflow: primary
@@ -10,10 +9,9 @@ trigger_map:
   workflow: primary
 - pull_request_target_branch: main
   workflow: primary
-
 workflows:
   primary:
-    description: "Build and test iOS app using Mock Data"
+    description: Build and test iOS app using Mock Data
     meta:
       bitrise.io:
         stack: osx-xcode-16.0.x
@@ -29,7 +27,9 @@ workflows:
     - deploy-to-bitrise-io@2:
         inputs:
         - notify_user_groups: none
-
+    triggers:
+      push:
+      - branch: "*"
 app:
   envs:
   - BITRISE_PROJECT_PATH: ios/demoBank/demoBank.xcodeproj

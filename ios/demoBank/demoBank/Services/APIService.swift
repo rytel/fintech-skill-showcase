@@ -5,6 +5,7 @@
 
 import Foundation
 
+@MainActor
 final class APIService: APIServiceProtocol {
     private let session: URLSession
     private let baseURL = URL(string: "http://localhost:8080")!

@@ -1,10 +1,12 @@
 import Foundation
 import Combine
 
+@MainActor
 protocol AuthServiceProtocol {
     func login(credentials: LoginRequest) -> AnyPublisher<LoginResponse, Error>
 }
 
+@MainActor
 final class AuthService: AuthServiceProtocol {
     private let apiService: APIServiceProtocol
     

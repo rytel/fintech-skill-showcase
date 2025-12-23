@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-final class TransferViewModel: ObservableObject {
+@MainActor final class TransferViewModel: ObservableObject {
     enum Step {
         case recipient
         case amount

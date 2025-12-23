@@ -3,7 +3,7 @@ import Combine
 import LocalAuthentication
 
 /// ViewModel dla widoku logowania.
-final class LoginViewModel: ObservableObject {
+@MainActor final class LoginViewModel: ObservableObject {
     @Published var username = ""
     @Published var password = ""
     @Published var isLoading = false
