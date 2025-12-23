@@ -4,7 +4,7 @@ import Foundation
 
 struct TransactionListViewModelTests {
     
-    @Test @MainActor func fetchTransactionsUpdatesState() async {
+    @Test func fetchTransactionsUpdatesState() async {
         let mockAPI = MockAPIServiceForTransactions()
         let viewModel = TransactionListViewModel(apiService: mockAPI)
         
@@ -15,7 +15,7 @@ struct TransactionListViewModelTests {
         #expect(!viewModel.isLoading)
     }
 
-    @Test @MainActor func fetchTransactionsHandlesError() async {
+    @Test func fetchTransactionsHandlesError() async {
         let mockAPI = MockAPIServiceForTransactions()
         mockAPI.shouldReturnError = true
         let viewModel = TransactionListViewModel(apiService: mockAPI)

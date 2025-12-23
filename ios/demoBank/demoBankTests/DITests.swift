@@ -2,7 +2,7 @@ import Testing
 import Foundation
 @testable import demoBank
 
-@MainActor
+
 struct DITests {
     
     @Test func dependencyContainerRegistersAndResolvesService() {
@@ -16,7 +16,7 @@ struct DITests {
     }
 }
 
-@MainActor
+
 class MockAPIService: APIServiceProtocol {
     func login(username: String, password: String) async throws -> LoginResponse {
         return LoginResponse(token: "")

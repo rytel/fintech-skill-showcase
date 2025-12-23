@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-@MainActor final class TransferViewModel: ObservableObject {
+final class TransferViewModel: ObservableObject {
     enum Step {
         case recipient
         case amount
@@ -60,7 +60,7 @@ import Combine
         }
     }
     
-    @MainActor
+    
     private func performTransfer() {
         isLoading = true
         errorMessage = nil

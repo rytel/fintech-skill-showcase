@@ -3,7 +3,7 @@ import SwiftUI
 import Combine
 
 /// Główny koordynator aplikacji zarządzający przełączaniem między flow logowania a głównym widokiem.
-@MainActor final class AppCoordinator: Coordinator, ObservableObject {
+final class AppCoordinator: Coordinator, ObservableObject {
     var childCoordinators: [Coordinator] = []
     
     @Published var rootView: AnyView = AnyView(EmptyView())

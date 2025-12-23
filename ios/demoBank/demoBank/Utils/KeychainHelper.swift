@@ -6,7 +6,7 @@
 import Foundation
 import Security
 
-@MainActor
+
 final class KeychainHelper {
     static let shared = KeychainHelper()
     private init() {}

@@ -5,7 +5,7 @@ import Foundation
 
 struct LoginViewModelTests {
     
-    @Test @MainActor func loginSuccessUpdatesState() async throws {
+    @Test func loginSuccessUpdatesState() async throws {
         let mockAuthService = MockAuthService()
         let viewModel = LoginViewModel(authService: mockAuthService)
         

@@ -1,7 +1,7 @@
 import Testing
 @testable import demoBank
 
-@MainActor
+
 struct CoordinatorTests {
     
     @Test func coordinatorProtocolExists() {
@@ -12,7 +12,7 @@ struct CoordinatorTests {
     }
 }
 
-@MainActor
+
 class MockCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
     func start() {}

@@ -5,14 +5,14 @@
 
 import Foundation
 
-enum TransactionType: String, Codable, Sendable {
+enum TransactionType: String, Codable {
     case deposit = "DEPOSIT"
     case withdrawal = "WITHDRAWAL"
     case transferIn = "TRANSFER_IN"
     case transferOut = "TRANSFER_OUT"
 }
 
-struct Transaction: Codable, Sendable {
+struct Transaction: Codable {
     let id: String
     let accountId: String
     let type: TransactionType

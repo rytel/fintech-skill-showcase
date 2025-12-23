@@ -2,7 +2,7 @@ import Testing
 import Foundation
 @testable import demoBank
 
-@MainActor
+
 struct DashboardViewModelTests {
     
     @Test func fetchAccountUpdatesState() async {
@@ -17,7 +17,7 @@ struct DashboardViewModelTests {
     }
 }
 
-@MainActor
+
 class MockAPIServiceForDashboard: APIServiceProtocol {
     func login(username: String, password: String) async throws -> LoginResponse {
         return LoginResponse(token: "token")

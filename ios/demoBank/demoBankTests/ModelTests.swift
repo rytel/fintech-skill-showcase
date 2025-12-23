@@ -7,7 +7,7 @@ import Testing
 import Foundation
 @testable import demoBank
 
-@MainActor
+
 struct ModelTests {
     
     @Test func loginRequestEncoding() throws {

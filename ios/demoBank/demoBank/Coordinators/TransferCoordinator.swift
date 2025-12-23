@@ -2,7 +2,7 @@ import Foundation
 import SwiftUI
 import Combine
 
-@MainActor final class TransferCoordinator: Coordinator, ObservableObject {
+final class TransferCoordinator: Coordinator, ObservableObject {
     var childCoordinators: [Coordinator] = []
     
     @Published var rootView: AnyView = AnyView(EmptyView())

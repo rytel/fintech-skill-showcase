@@ -1,7 +1,7 @@
 import Testing
 @testable import demoBank
 
-@MainActor
+
 struct ViewModelFactoryTests {
     
     @Test func viewModelFactoryCreatesLoginViewModel() {

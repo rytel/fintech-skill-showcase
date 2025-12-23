@@ -1,7 +1,7 @@
 import Foundation
 
 /// Prosty kontener Dependency Injection zarządzający czasem życia serwisów.
-@MainActor
+
 final class DependencyContainer {
     static let shared = DependencyContainer()
     

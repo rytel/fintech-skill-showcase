@@ -2,7 +2,7 @@ import XCTest
 
 final class LoginUITests: BaseUITest {
     
-    @MainActor
+    
     func testSuccessfulLogin() throws {
         // 1. Sprawdź czy jesteśmy na ekranie logowania
         let welcomeText = app.staticTexts["Welcome to demoBank"]
@@ -16,7 +16,7 @@ final class LoginUITests: BaseUITest {
         XCTAssertTrue(dashboardTitle.waitForExistence(timeout: 10), "Dashboard should appear after login")
     }
     
-    @MainActor
+    
     func testInvalidLoginFeedback() throws {
         // 1. Wykonaj logowanie z błędnym hasłem
         login(user: "test_user", pass: "wrong_password", expectError: true)

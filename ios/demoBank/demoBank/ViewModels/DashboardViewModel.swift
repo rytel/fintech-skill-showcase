@@ -2,7 +2,7 @@ import Foundation
 import Combine
 
 /// ViewModel dla widoku podsumowania kont (Dashboard).
-@MainActor final class DashboardViewModel: ObservableObject {
+final class DashboardViewModel: ObservableObject {
     @Published var account: Account?
     @Published var isLoading = false
     @Published var errorMessage: String?
@@ -14,7 +14,7 @@ import Combine
         self.apiService = apiService
     }
     
-    @MainActor
+    
     func fetchData() async {
         isLoading = true
         errorMessage = nil

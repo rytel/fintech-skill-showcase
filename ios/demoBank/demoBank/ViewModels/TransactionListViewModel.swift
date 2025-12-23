@@ -2,7 +2,7 @@ import Foundation
 import Combine
 
 /// ViewModel dla listy transakcji.
-@MainActor final class TransactionListViewModel: ObservableObject {
+final class TransactionListViewModel: ObservableObject {
     @Published var transactions: [Transaction] = []
     @Published var isLoading = false
     @Published var errorMessage: String?
@@ -14,7 +14,7 @@ import Combine
         self.apiService = apiService
     }
     
-    @MainActor
+    
     func fetchTransactions(userId: String) async {
         isLoading = true
         errorMessage = nil

@@ -5,11 +5,11 @@
 
 import Foundation
 
-struct LoginRequest: Codable, Sendable {
+struct LoginRequest: Codable {
     let username: String
     let password: String
 }
 
-struct LoginResponse: Codable, Sendable {
+struct LoginResponse: Codable {
     let token: String
 }

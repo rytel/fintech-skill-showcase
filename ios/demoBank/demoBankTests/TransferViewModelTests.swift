@@ -2,7 +2,7 @@ import Testing
 import Foundation
 @testable import demoBank
 
-@MainActor
+
 struct TransferViewModelTests {
     
     private var mockAPI: MockAPIService
