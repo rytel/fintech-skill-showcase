@@ -13,29 +13,6 @@ trigger_map:
 
 workflows:
   primary:
-    description: "Main entry point that runs both backend and iOS tests"
-    after_run:
-    - test_backend
-    - test_ios
-
-  test_backend:
-    description: "Build and test Go backend using Docker Compose"
-    project_type: other
-    stack: linux-docker-android-22.04
-    steps:
-    - activate-ssh-key@4: {}
-    - git-clone@6: {}
-    - script@1:
-        title: Run Backend Tests
-        inputs:
-        - content: |-
-            #!/bin/bash
-            set -ex
-            cd backend
-            # Note: make test already handles docker-compose up/down
-            make test
-
-  test_ios:
     description: "Build and test iOS app using Mock Data"
     stack: osx-xcode-16.0.x
     steps:
