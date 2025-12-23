@@ -21,7 +21,7 @@ workflows:
   test_backend:
     description: "Build and test Go backend using Docker Compose"
     project_type: other
-    stack: linux-docker-android-22.04 # Standard Linux stack with Docker
+    stack: linux-docker-android-22.04
     steps:
     - activate-ssh-key@4: {}
     - git-clone@6: {}
@@ -32,52 +32,21 @@ workflows:
             #!/bin/bash
             set -ex
             cd backend
+            # Note: make test already handles docker-compose up/down
             make test
 
   test_ios:
-    description: "Build and test iOS app with backend running in background"
-    stack: osx-xcode-16.0.x # macOS stack for Xcode 16
+    description: "Build and test iOS app using Mock Data"
+    stack: osx-xcode-16.0.x
     steps:
     - activate-ssh-key@4: {}
     - git-clone@6: {}
-    - script@1:
-        title: Setup Environment and Run Backend
-        inputs:
-        - content: |-
-            #!/bin/bash
-            set -ex
-            
-            # 1. Install and Start PostgreSQL
-            brew install postgresql@15
-            brew services start postgresql@15
-            sleep 5
-            /opt/homebrew/opt/postgresql@15/bin/createuser -s postgres || true
-            /opt/homebrew/opt/postgresql@15/bin/createdb -U postgres fintech_db || true
-
-            # 2. Build and Start Backend in background
-            cd backend
-            export DB_HOST=localhost
-            export DB_PORT=5432
-            export DB_USER=postgres
-            export DB_NAME=fintech_db
-            go run cmd/server/main.go &
-            
-            # 3. Wait for backend
-            for i in {1..20}; do
-              if curl -s http://localhost:8080/api/status; then
-                echo "Backend is ready!"
-                break
-              fi
-              echo "Waiting for backend..."
-              sleep 2
-            done
     - xcode-test@5:
-        title: Run iOS Tests
+        title: Run iOS Tests (Unit + UI with Mocks)
         inputs:
         - project_path: ios/demoBank/demoBank.xcodeproj
         - scheme: demoBank
         - destination: platform=iOS Simulator,name=iPhone 16 Pro,OS=latest
-        - test_plan: ""
     - deploy-to-bitrise-io@2:
         inputs:
         - notify_user_groups: none
@@ -86,4 +55,3 @@ app:
   envs:
   - BITRISE_PROJECT_PATH: ios/demoBank/demoBank.xcodeproj
   - BITRISE_SCHEME: demoBank
-  - BITRISE_DISTRIBUTION_METHOD: development

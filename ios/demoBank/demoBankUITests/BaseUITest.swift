@@ -8,6 +8,7 @@ class BaseUITest: XCTestCase {
         app = XCUIApplication()
         app.launchArguments.append("-skipBiometrics")
         app.launchArguments.append("-resetKeychain")
+        app.launchArguments.append("-useMockData")
         app.launch()
     }
     
