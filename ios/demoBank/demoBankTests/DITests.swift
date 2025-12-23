@@ -3,6 +3,7 @@ import Foundation
 @testable import demoBank
 
 
+@MainActor
 struct DITests {
     
     @Test func dependencyContainerRegistersAndResolvesService() {

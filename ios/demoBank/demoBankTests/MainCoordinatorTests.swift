@@ -2,7 +2,8 @@ import Testing
 @testable import demoBank
 
 
-struct MainCoordinatorTests {
+@MainActor
+final class MainCoordinatorTests {
     
     @Test func mainCoordinatorInitializesWithChildCoordinators() {
         let coordinator = MainCoordinator(factory: ViewModelFactory())

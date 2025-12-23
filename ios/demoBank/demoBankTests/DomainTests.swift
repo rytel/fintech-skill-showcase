@@ -9,6 +9,7 @@ import Foundation
 
 @Suite(.serialized)
 
+@MainActor
 struct DomainTests {
     
     // MARK: - Keychain Tests

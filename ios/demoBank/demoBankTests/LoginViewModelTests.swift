@@ -3,6 +3,7 @@ import Combine
 import Foundation
 @testable import demoBank
 
+@MainActor
 struct LoginViewModelTests {
     
     @Test func loginSuccessUpdatesState() async throws {

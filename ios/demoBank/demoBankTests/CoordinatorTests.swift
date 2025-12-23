@@ -2,7 +2,8 @@ import Testing
 @testable import demoBank
 
 
-struct CoordinatorTests {
+@MainActor
+final class CoordinatorTests {
     
     @Test func coordinatorProtocolExists() {
         // Ten test ma na celu sprawdzenie, czy protokół Coordinator jest zdefiniowany
@@ -13,6 +14,7 @@ struct CoordinatorTests {
 }
 
 
+@MainActor
 class MockCoordinator: Coordinator {
     var childCoordinators: [Coordinator] = []
     func start() {}

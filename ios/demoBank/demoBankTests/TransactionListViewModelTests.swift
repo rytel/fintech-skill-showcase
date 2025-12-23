@@ -2,6 +2,7 @@ import Testing
 import Foundation
 @testable import demoBank
 
+@MainActor
 struct TransactionListViewModelTests {
     
     @Test func fetchTransactionsUpdatesState() async {

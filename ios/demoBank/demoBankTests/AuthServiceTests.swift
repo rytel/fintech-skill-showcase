@@ -3,15 +3,20 @@ import Combine
 import Foundation
 @testable import demoBank
 
-struct AuthServiceTests {
+@MainActor
+final class AuthServiceTests {
     
     @Test func loginReturnsSuccess() async throws {
         let mockAPI = MockAPIServiceForAuth()
-        let service = AuthService(apiService: mockAPI)
+        let service = await AuthService(apiService: mockAPI)
         let request = LoginRequest(username: "test", password: "password")
         
         // Using AsyncPublisher to test Combine stream in a modern way
-        let response = try await service.login(credentials: request).values.first(where: { _ in true })
+        var response: LoginResponse?
+        for try await value in service.login(credentials: request).values {
+            response = value
+            break
+        }
         
         #expect(response?.token == "mock-token")
     }

@@ -3,16 +3,17 @@ import Foundation
 @testable import demoBank
 
 
+@MainActor
 struct DashboardViewModelTests {
     
     @Test func fetchAccountUpdatesState() async {
         let mockAPI = MockAPIServiceForDashboard()
-        let viewModel = DashboardViewModel(apiService: mockAPI)
+        let viewModel = await DashboardViewModel(apiService: mockAPI)
         
         await viewModel.fetchData()
         
         #expect(viewModel.account != nil)
-        #expect(viewModel.account?.balance == 1234.56)
+        await #expect(viewModel.account?.balance == 1234.56)
         #expect(!viewModel.isLoading)
     }
 }
