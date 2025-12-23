@@ -1,0 +1,60 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ main, feature/* ]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+
+jobs:
+  test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: backend
+
+    services:
+      # We could use services here, but the Makefile uses docker-compose 
+      # which handles multiple containers and network setup. 
+      # GitHub Actions ubuntu-latest includes docker and docker-compose.
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache-dependency-path: backend/go.sum
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Verify dependencies
+        run: go mod verify
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Run tests with Docker Compose
+        run: |
+          # Use the Makefile to run tests which handles docker-compose
+          make test
+
+      - name: Lint (Optional but recommended)
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: latest
+          working-directory: backend
+          # Disable linting for now to ensure the basic CI passes first, 
+          # or we can enable it if the user wants strict checks.
+          args: --timeout=5m
+        continue-on-error: true
