@@ -1,0 +1,70 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [ main, feature/* ]
+    paths:
+      - 'ios/**'
+      - 'backend/**' # UI tests need backend
+      - '.github/workflows/ios.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'ios/**'
+
+jobs:
+  test:
+    name: iOS Build and Test
+    runs-on: macos-15
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          cache-dependency-path: backend/go.sum
+
+      - name: Start PostgreSQL
+        run: |
+          brew install postgresql@15
+          brew services start postgresql@15
+          # Wait for postgres to start
+          sleep 5
+          # Create database and user
+          /opt/homebrew/opt/postgresql@15/bin/createuser -s postgres || true
+          /opt/homebrew/opt/postgresql@15/bin/createdb -U postgres fintech_db || true
+
+      - name: Start Backend
+        run: |
+          cd backend
+          go mod download
+          # Run backend in background
+          DB_HOST=localhost DB_PORT=5432 DB_USER=postgres DB_NAME=fintech_db go run cmd/server/main.go &
+          # Wait for backend to be ready
+          until curl -s http://localhost:8080/api/status; do
+            echo "Waiting for backend..."
+            sleep 2
+          done
+          echo "Backend is up!"
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.app
+
+      - name: iOS Unit and UI Tests
+        run: |
+          xcodebuild test \
+            -project ios/demoBank/demoBank.xcodeproj \
+            -scheme demoBank \
+            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.0' \
+            -resultBundlePath TestResults
+        continue-on-error: false
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-test-results
+          path: TestResults
