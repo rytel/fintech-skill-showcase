@@ -33,7 +33,12 @@ final class MockAuthService: AuthServiceProtocol {
 }
 
 final class MockAPIService: APIServiceProtocol {
+    private func simulateNetworkDelay() async throws {
+        try await Task.sleep(nanoseconds: 500_000_000) // 0.5 sekundy
+    }
+    
     func login(username: String, password: String) async throws -> LoginResponse {
+        try await simulateNetworkDelay()
         if username == "test_user" && password == "password123" {
             return LoginResponse(token: MockData.token)
         }
@@ -41,14 +46,17 @@ final class MockAPIService: APIServiceProtocol {
     }
     
     func fetchAccount(userId: String) async throws -> Account {
+        try await simulateNetworkDelay()
         return MockData.account
     }
     
     func fetchTransactions(userId: String) async throws -> [Transaction] {
+        try await simulateNetworkDelay()
         return MockData.transactions
     }
     
     func performTransaction(userId: String, type: TransactionType, amount: Double) async throws -> Account {
+        try await simulateNetworkDelay()
         var newAccount = MockData.account
         if type == .withdraw {
             newAccount.balance -= amount
